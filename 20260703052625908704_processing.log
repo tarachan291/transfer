@@ -1,0 +1,265 @@
+2026-07-03 14:26:34 [PROCESSING] ログ初期化: /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0400555-2/20260703052625908704_processing.log, /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0400555-2/20260703052625908704_detail.log
+2026-07-03 14:26:34 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf38
+2026-07-03 14:26:35 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:26:35 [PROCESSING] dqnoym3b-Leaf32: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:26:35 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf32
+2026-07-03 14:26:36 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:26:36 [PROCESSING] dqnoym3b-Leaf32: shutdown/noshut 生成
+2026-07-03 14:26:36 [PROCESSING] dqnoym3b-Leaf32: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:26:36 [PROCESSING] dqnoym3b-Leaf32: before 状態採取完了（leaf）
+2026-07-03 14:26:36 [PROCESSING] dqnoym3b-Leaf32: shutdown投入開始
+2026-07-03 14:26:37 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf32/dqnoym3b-Leaf32_shutdown.json
+2026-07-03 14:26:37 [PROCESSING] dqnoym3b-Leaf32: shutdown投入完了
+2026-07-03 14:26:42 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf32
+2026-07-03 14:26:42 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:26:48 [PROCESSING] dqnoym3b-Leaf32: after 状態採取完了（leaf）
+2026-07-03 14:26:48 [PROCESSING] dqnoym3b-Leaf32: SSHログ採取開始（leaf）
+2026-07-03 14:27:03 [PROCESSING] dqnoym3b-Leaf32: SSHログ採取完了（leaf）
+2026-07-03 14:27:03 [PROCESSING] dqnoym3b-Leaf34: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:27:03 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf34
+2026-07-03 14:27:04 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:27:04 [PROCESSING] dqnoym3b-Leaf34: shutdown/noshut 生成
+2026-07-03 14:27:04 [PROCESSING] dqnoym3b-Leaf34: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:27:05 [PROCESSING] dqnoym3b-Leaf34: before 状態採取完了（leaf）
+2026-07-03 14:27:05 [PROCESSING] dqnoym3b-Leaf34: shutdown投入開始
+2026-07-03 14:27:05 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf34/dqnoym3b-Leaf34_shutdown.json
+2026-07-03 14:27:05 [PROCESSING] dqnoym3b-Leaf34: shutdown投入完了
+2026-07-03 14:27:10 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf34
+2026-07-03 14:27:11 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:27:16 [PROCESSING] dqnoym3b-Leaf34: after 状態採取完了（leaf）
+2026-07-03 14:27:16 [PROCESSING] dqnoym3b-Leaf34: SSHログ採取開始（leaf）
+2026-07-03 14:27:32 [PROCESSING] dqnoym3b-Leaf34: SSHログ採取完了（leaf）
+2026-07-03 14:27:32 [PROCESSING] dqnoym3b-Leaf36: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:27:32 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf36
+2026-07-03 14:27:32 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:27:32 [PROCESSING] dqnoym3b-Leaf36: shutdown/noshut 生成
+2026-07-03 14:27:33 [PROCESSING] dqnoym3b-Leaf36: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:27:33 [PROCESSING] dqnoym3b-Leaf36: before 状態採取完了（leaf）
+2026-07-03 14:27:33 [PROCESSING] dqnoym3b-Leaf36: shutdown投入開始
+2026-07-03 14:27:33 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf36/dqnoym3b-Leaf36_shutdown.json
+2026-07-03 14:27:33 [PROCESSING] dqnoym3b-Leaf36: shutdown投入完了
+2026-07-03 14:27:38 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf36
+2026-07-03 14:27:39 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:27:44 [PROCESSING] dqnoym3b-Leaf36: after 状態採取完了（leaf）
+2026-07-03 14:27:44 [PROCESSING] dqnoym3b-Leaf36: SSHログ採取開始（leaf）
+2026-07-03 14:28:00 [PROCESSING] dqnoym3b-Leaf36: SSHログ採取完了（leaf）
+2026-07-03 14:28:00 [PROCESSING] dqnoym3b-Leaf38: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:28:00 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf38
+2026-07-03 14:28:00 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:28:01 [PROCESSING] dqnoym3b-Leaf38: shutdown/noshut 生成
+2026-07-03 14:28:01 [PROCESSING] dqnoym3b-Leaf38: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:28:01 [PROCESSING] dqnoym3b-Leaf38: before 状態採取完了（leaf）
+2026-07-03 14:28:01 [PROCESSING] dqnoym3b-Leaf38: shutdown投入開始
+2026-07-03 14:28:01 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf38/dqnoym3b-Leaf38_shutdown.json
+2026-07-03 14:28:01 [PROCESSING] dqnoym3b-Leaf38: shutdown投入完了
+2026-07-03 14:28:06 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf38
+2026-07-03 14:28:07 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:28:12 [PROCESSING] dqnoym3b-Leaf38: after 状態採取完了（leaf）
+2026-07-03 14:28:12 [PROCESSING] dqnoym3b-Leaf38: SSHログ採取開始（leaf）
+2026-07-03 14:28:28 [PROCESSING] dqnoym3b-Leaf38: SSHログ採取完了（leaf）
+2026-07-03 14:28:28 [PROCESSING] dqnoym3b-Leaf40: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:28:28 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf40
+2026-07-03 14:28:29 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:28:29 [PROCESSING] dqnoym3b-Leaf40: shutdown/noshut 生成
+2026-07-03 14:28:29 [PROCESSING] dqnoym3b-Leaf40: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:28:29 [PROCESSING] dqnoym3b-Leaf40: before 状態採取完了（leaf）
+2026-07-03 14:28:29 [PROCESSING] dqnoym3b-Leaf40: shutdown投入開始
+2026-07-03 14:28:30 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf40/dqnoym3b-Leaf40_shutdown.json
+2026-07-03 14:28:30 [PROCESSING] dqnoym3b-Leaf40: shutdown投入完了
+2026-07-03 14:28:35 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf40
+2026-07-03 14:28:35 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:28:41 [PROCESSING] dqnoym3b-Leaf40: after 状態採取完了（leaf）
+2026-07-03 14:28:41 [PROCESSING] dqnoym3b-Leaf40: SSHログ採取開始（leaf）
+2026-07-03 14:28:56 [PROCESSING] dqnoym3b-Leaf40: SSHログ採取完了（leaf）
+2026-07-03 14:28:56 [PROCESSING] dqnoym3b-Leaf42: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:28:56 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf42
+2026-07-03 14:28:57 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:28:57 [PROCESSING] dqnoym3b-Leaf42: shutdown/noshut 生成
+2026-07-03 14:28:57 [PROCESSING] dqnoym3b-Leaf42: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:28:57 [PROCESSING] dqnoym3b-Leaf42: before 状態採取完了（leaf）
+2026-07-03 14:28:57 [PROCESSING] dqnoym3b-Leaf42: shutdown投入開始
+2026-07-03 14:28:58 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf42/dqnoym3b-Leaf42_shutdown.json
+2026-07-03 14:28:58 [PROCESSING] dqnoym3b-Leaf42: shutdown投入完了
+2026-07-03 14:29:03 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf42
+2026-07-03 14:29:03 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:29:09 [PROCESSING] dqnoym3b-Leaf42: after 状態採取完了（leaf）
+2026-07-03 14:29:09 [PROCESSING] dqnoym3b-Leaf42: SSHログ採取開始（leaf）
+2026-07-03 14:29:24 [PROCESSING] dqnoym3b-Leaf42: SSHログ採取完了（leaf）
+2026-07-03 14:29:24 [PROCESSING] dqnoym3b-Leaf44: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:29:24 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf44
+2026-07-03 14:29:25 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:29:25 [PROCESSING] dqnoym3b-Leaf44: shutdown/noshut 生成
+2026-07-03 14:29:26 [PROCESSING] dqnoym3b-Leaf44: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:29:26 [PROCESSING] dqnoym3b-Leaf44: before 状態採取完了（leaf）
+2026-07-03 14:29:26 [PROCESSING] dqnoym3b-Leaf44: shutdown投入開始
+2026-07-03 14:29:26 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf44/dqnoym3b-Leaf44_shutdown.json
+2026-07-03 14:29:26 [PROCESSING] dqnoym3b-Leaf44: shutdown投入完了
+2026-07-03 14:29:31 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf44
+2026-07-03 14:29:32 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:29:37 [PROCESSING] dqnoym3b-Leaf44: after 状態採取完了（leaf）
+2026-07-03 14:29:37 [PROCESSING] dqnoym3b-Leaf44: SSHログ採取開始（leaf）
+2026-07-03 14:29:52 [PROCESSING] dqnoym3b-Leaf44: SSHログ採取完了（leaf）
+2026-07-03 14:29:52 [PROCESSING] dqnoym3b-Leaf46: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:29:52 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf46
+2026-07-03 14:29:53 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:29:53 [PROCESSING] dqnoym3b-Leaf46: shutdown/noshut 生成
+2026-07-03 14:29:54 [PROCESSING] dqnoym3b-Leaf46: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:29:54 [PROCESSING] dqnoym3b-Leaf46: before 状態採取完了（leaf）
+2026-07-03 14:29:54 [PROCESSING] dqnoym3b-Leaf46: shutdown投入開始
+2026-07-03 14:29:54 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf46/dqnoym3b-Leaf46_shutdown.json
+2026-07-03 14:29:54 [PROCESSING] dqnoym3b-Leaf46: shutdown投入完了
+2026-07-03 14:29:59 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf46
+2026-07-03 14:30:00 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:30:05 [PROCESSING] dqnoym3b-Leaf46: after 状態採取完了（leaf）
+2026-07-03 14:30:05 [PROCESSING] dqnoym3b-Leaf46: SSHログ採取開始（leaf）
+2026-07-03 14:30:21 [PROCESSING] dqnoym3b-Leaf46: SSHログ採取完了（leaf）
+2026-07-03 14:30:21 [PROCESSING] dqnoym3b-Leaf48: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:30:21 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf48
+2026-07-03 14:30:22 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:30:22 [PROCESSING] dqnoym3b-Leaf48: shutdown/noshut 生成
+2026-07-03 14:30:23 [PROCESSING] dqnoym3b-Leaf48: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:30:23 [PROCESSING] dqnoym3b-Leaf48: before 状態採取完了（leaf）
+2026-07-03 14:30:23 [PROCESSING] dqnoym3b-Leaf48: shutdown投入開始
+2026-07-03 14:30:23 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf48/dqnoym3b-Leaf48_shutdown.json
+2026-07-03 14:30:23 [PROCESSING] dqnoym3b-Leaf48: shutdown投入完了
+2026-07-03 14:30:28 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf48
+2026-07-03 14:30:29 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:30:34 [PROCESSING] dqnoym3b-Leaf48: after 状態採取完了（leaf）
+2026-07-03 14:30:34 [PROCESSING] dqnoym3b-Leaf48: SSHログ採取開始（leaf）
+2026-07-03 14:30:50 [PROCESSING] dqnoym3b-Leaf48: SSHログ採取完了（leaf）
+2026-07-03 14:30:50 [PROCESSING] dqnoym3b-Leaf58: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:30:50 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf58
+2026-07-03 14:30:50 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:30:51 [PROCESSING] dqnoym3b-Leaf58: shutdown/noshut 生成
+2026-07-03 14:30:51 [PROCESSING] dqnoym3b-Leaf58: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:30:51 [PROCESSING] dqnoym3b-Leaf58: SSHログ採取開始（leaf）
+2026-07-03 14:31:05 [PROCESSING] dqnoym3b-Leaf58: SSHログ採取完了（leaf）
+2026-07-03 14:31:05 [PROCESSING] dqnoym3b-Leaf60: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:31:05 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf60
+2026-07-03 14:31:06 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:31:06 [PROCESSING] dqnoym3b-Leaf60: shutdown/noshut 生成
+2026-07-03 14:31:06 [PROCESSING] dqnoym3b-Leaf60: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:31:07 [PROCESSING] dqnoym3b-Leaf60: SSHログ採取開始（leaf）
+2026-07-03 14:31:20 [PROCESSING] dqnoym3b-Leaf60: SSHログ採取完了（leaf）
+2026-07-03 14:31:20 [PROCESSING] dqnoym3b-Leaf62: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:31:20 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf62
+2026-07-03 14:31:21 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:31:21 [PROCESSING] dqnoym3b-Leaf62: shutdown/noshut 生成
+2026-07-03 14:31:22 [PROCESSING] dqnoym3b-Leaf62: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:31:22 [PROCESSING] dqnoym3b-Leaf62: SSHログ採取開始（leaf）
+2026-07-03 14:31:36 [PROCESSING] dqnoym3b-Leaf62: SSHログ採取完了（leaf）
+2026-07-03 14:31:36 [PROCESSING] dqnoym3b-Leaf64: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:31:36 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf64
+2026-07-03 14:31:37 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:31:37 [PROCESSING] dqnoym3b-Leaf64: shutdown/noshut 生成
+2026-07-03 14:31:37 [PROCESSING] dqnoym3b-Leaf64: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:31:37 [PROCESSING] dqnoym3b-Leaf64: SSHログ採取開始（leaf）
+2026-07-03 14:31:51 [PROCESSING] dqnoym3b-Leaf64: SSHログ採取完了（leaf）
+2026-07-03 14:31:51 [PROCESSING] dqnoym3b-Leaf66: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:31:51 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf66
+2026-07-03 14:31:52 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:31:52 [PROCESSING] dqnoym3b-Leaf66: shutdown/noshut 生成
+2026-07-03 14:31:52 [PROCESSING] dqnoym3b-Leaf66: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:31:53 [PROCESSING] dqnoym3b-Leaf66: SSHログ採取開始（leaf）
+2026-07-03 14:32:07 [PROCESSING] dqnoym3b-Leaf66: SSHログ採取完了（leaf）
+2026-07-03 14:32:07 [PROCESSING] dqnoym3b-Leaf68: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:32:07 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf68
+2026-07-03 14:32:07 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:32:07 [PROCESSING] dqnoym3b-Leaf68: shutdown/noshut 生成
+2026-07-03 14:32:08 [PROCESSING] dqnoym3b-Leaf68: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:32:08 [PROCESSING] dqnoym3b-Leaf68: SSHログ採取開始（leaf）
+2026-07-03 14:32:22 [PROCESSING] dqnoym3b-Leaf68: SSHログ採取完了（leaf）
+2026-07-03 14:32:22 [PROCESSING] dqnoym3b-Leaf70: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:32:22 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf70
+2026-07-03 14:32:23 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:32:23 [PROCESSING] dqnoym3b-Leaf70: shutdown/noshut 生成
+2026-07-03 14:32:23 [PROCESSING] dqnoym3b-Leaf70: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:32:23 [PROCESSING] dqnoym3b-Leaf70: SSHログ採取開始（leaf）
+2026-07-03 14:32:37 [PROCESSING] dqnoym3b-Leaf70: SSHログ採取完了（leaf）
+2026-07-03 14:32:37 [PROCESSING] dqnoym3b-Leaf76: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:32:37 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf76
+2026-07-03 14:32:38 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:32:38 [PROCESSING] dqnoym3b-Leaf76: shutdown/noshut 生成
+2026-07-03 14:32:38 [PROCESSING] dqnoym3b-Leaf76: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:32:38 [PROCESSING] dqnoym3b-Leaf76: before 状態採取完了（leaf）
+2026-07-03 14:32:38 [PROCESSING] dqnoym3b-Leaf76: shutdown投入開始
+2026-07-03 14:32:39 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf76/dqnoym3b-Leaf76_shutdown.json
+2026-07-03 14:32:39 [PROCESSING] dqnoym3b-Leaf76: shutdown投入完了
+2026-07-03 14:32:44 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf76
+2026-07-03 14:32:45 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:32:50 [PROCESSING] dqnoym3b-Leaf76: after 状態採取完了（leaf）
+2026-07-03 14:32:50 [PROCESSING] dqnoym3b-Leaf76: SSHログ採取開始（leaf）
+2026-07-03 14:33:04 [PROCESSING] dqnoym3b-Leaf76: SSHログ採取完了（leaf）
+2026-07-03 14:33:04 [PROCESSING] dqnoym3b-Leaf78: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:33:04 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf78
+2026-07-03 14:33:05 [PROCESSING] APIC接続成功: apic_ip=172.30.201.196, apic=dqnoym2b-SdnSv01
+2026-07-03 14:33:05 [PROCESSING] dqnoym3b-Leaf78: shutdown/noshut 生成
+2026-07-03 14:33:05 [PROCESSING] dqnoym3b-Leaf78: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:33:05 [PROCESSING] dqnoym3b-Leaf78: before 状態採取完了（leaf）
+2026-07-03 14:33:05 [PROCESSING] dqnoym3b-Leaf78: shutdown投入開始
+2026-07-03 14:33:06 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf78/dqnoym3b-Leaf78_shutdown.json
+2026-07-03 14:33:06 [PROCESSING] dqnoym3b-Leaf78: shutdown投入完了
+2026-07-03 14:33:11 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf78
+2026-07-03 14:33:11 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:33:17 [PROCESSING] dqnoym3b-Leaf78: after 状態採取完了（leaf）
+2026-07-03 14:33:17 [PROCESSING] dqnoym3b-Leaf78: SSHログ採取開始（leaf）
+2026-07-03 14:33:31 [PROCESSING] dqnoym3b-Leaf78: SSHログ採取完了（leaf）
+2026-07-03 14:33:31 [PROCESSING] dqnoym3b-Leaf80: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:33:31 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf80
+2026-07-03 14:33:31 [PROCESSING] APIC接続成功: apic_ip=172.30.226.235, apic=dqnoym2b-SdnSv04
+2026-07-03 14:33:32 [PROCESSING] dqnoym3b-Leaf80: shutdown/noshut 生成
+2026-07-03 14:33:32 [PROCESSING] dqnoym3b-Leaf80: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:33:32 [PROCESSING] dqnoym3b-Leaf80: before 状態採取完了（leaf）
+2026-07-03 14:33:32 [PROCESSING] dqnoym3b-Leaf80: shutdown投入開始
+2026-07-03 14:33:32 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf80/dqnoym3b-Leaf80_shutdown.json
+2026-07-03 14:33:32 [PROCESSING] dqnoym3b-Leaf80: shutdown投入完了
+2026-07-03 14:33:37 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf80
+2026-07-03 14:33:38 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:33:43 [PROCESSING] dqnoym3b-Leaf80: after 状態採取完了（leaf）
+2026-07-03 14:33:43 [PROCESSING] dqnoym3b-Leaf80: SSHログ採取開始（leaf）
+2026-07-03 14:34:00 [PROCESSING] dqnoym3b-Leaf80: SSHログ採取完了（leaf）
+2026-07-03 14:34:00 [PROCESSING] dqnoym3b-Leaf82: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:34:00 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf82
+2026-07-03 14:34:00 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:34:00 [PROCESSING] dqnoym3b-Leaf82: shutdown/noshut 生成
+2026-07-03 14:34:01 [PROCESSING] dqnoym3b-Leaf82: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:34:01 [PROCESSING] dqnoym3b-Leaf82: before 状態採取完了（leaf）
+2026-07-03 14:34:01 [PROCESSING] dqnoym3b-Leaf82: shutdown投入開始
+2026-07-03 14:34:01 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf82/dqnoym3b-Leaf82_shutdown.json
+2026-07-03 14:34:01 [PROCESSING] dqnoym3b-Leaf82: shutdown投入完了
+2026-07-03 14:34:06 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf82
+2026-07-03 14:34:07 [PROCESSING] APIC接続成功: apic_ip=172.30.201.197, apic=dqnoym2b-SdnSv02
+2026-07-03 14:34:12 [PROCESSING] dqnoym3b-Leaf82: after 状態採取完了（leaf）
+2026-07-03 14:34:12 [PROCESSING] dqnoym3b-Leaf82: SSHログ採取開始（leaf）
+2026-07-03 14:34:29 [PROCESSING] dqnoym3b-Leaf82: SSHログ採取完了（leaf）
+2026-07-03 14:34:29 [PROCESSING] dqnoym3b-Leaf84: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:34:29 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf84
+2026-07-03 14:34:30 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:34:30 [PROCESSING] dqnoym3b-Leaf84: shutdown/noshut 生成
+2026-07-03 14:34:30 [PROCESSING] dqnoym3b-Leaf84: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:34:30 [PROCESSING] dqnoym3b-Leaf84: before 状態採取完了（leaf）
+2026-07-03 14:34:30 [PROCESSING] dqnoym3b-Leaf84: shutdown投入開始
+2026-07-03 14:34:31 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf84/dqnoym3b-Leaf84_shutdown.json
+2026-07-03 14:34:31 [PROCESSING] dqnoym3b-Leaf84: shutdown投入完了
+2026-07-03 14:34:36 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf84
+2026-07-03 14:34:36 [PROCESSING] APIC接続成功: apic_ip=172.30.226.236, apic=dqnoym2b-SdnSv05
+2026-07-03 14:34:41 [PROCESSING] dqnoym3b-Leaf84: after 状態採取完了（leaf）
+2026-07-03 14:34:42 [PROCESSING] dqnoym3b-Leaf84: SSHログ採取開始（leaf）
+2026-07-03 14:34:58 [PROCESSING] dqnoym3b-Leaf84: SSHログ採取完了（leaf）
+2026-07-03 14:34:58 [PROCESSING] dqnoym3b-Leaf86: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:34:58 [PROCESSING] APIC接続試行: token_node=dqnoym3b-Leaf86
+2026-07-03 14:34:59 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:34:59 [PROCESSING] dqnoym3b-Leaf86: shutdown/noshut 生成
+2026-07-03 14:34:59 [PROCESSING] dqnoym3b-Leaf86: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-03 14:34:59 [PROCESSING] dqnoym3b-Leaf86: before 状態採取完了（leaf）
+2026-07-03 14:34:59 [PROCESSING] dqnoym3b-Leaf86: shutdown投入開始
+2026-07-03 14:35:00 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0400555-2/dqnoym3b-Leaf86/dqnoym3b-Leaf86_shutdown.json
+2026-07-03 14:35:00 [PROCESSING] dqnoym3b-Leaf86: shutdown投入完了
+2026-07-03 14:35:05 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqnoym3b-Leaf86
+2026-07-03 14:35:05 [PROCESSING] APIC接続成功: apic_ip=172.30.201.198, apic=dqnoym2b-SdnSv03
+2026-07-03 14:35:10 [PROCESSING] dqnoym3b-Leaf86: after 状態採取完了（leaf）
+2026-07-03 14:35:11 [PROCESSING] dqnoym3b-Leaf86: SSHログ採取開始（leaf）
+2026-07-03 14:35:27 [PROCESSING] dqnoym3b-Leaf86: SSHログ採取完了（leaf）
+2026-07-03 14:35:27 [PROCESSING] dqnsjkb-Leaf91: 処理開始 (scenario=disable, type=leaf)
+2026-07-03 14:35:27 [PROCESSING] APIC接続試行: token_node=dqnsjkb-Leaf91
+2026-07-03 14:35:27 [PROCESSING] APIC接続失敗
