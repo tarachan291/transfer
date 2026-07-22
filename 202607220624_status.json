@@ -1,0 +1,46 @@
+{
+    "status_code": "N00000001",
+    "message": "異常終了を含む",
+    "results": [
+        {
+            "target_node": "dqntky4-Leaf501",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf501の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf511",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf511の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf521",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf521の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf551",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf551の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf571",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf571の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf583",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf583の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        },
+        {
+            "target_node": "dqntky4-Leaf585",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf585の組み込み正常終了（before-disable と after-enable 一致）"
+        },
+        {
+            "target_node": "dqntky4-Leaf587",
+            "each_status_code": "E10000003",
+            "message": "dqntky4-Leaf587の組み込み異常終了（admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分）"
+        }
+    ]
+}

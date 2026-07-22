@@ -1,0 +1,163 @@
+2026-07-22 06:28:38 [PROCESSING] ログ初期化: /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/202607220624_processing.log, /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/202607220624_detail.log
+2026-07-22 06:28:39 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf587
+2026-07-22 06:28:40 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf511: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf501: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf521: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf551: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf585: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf583: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf571: post_threading 開始
+2026-07-22 06:28:40 [PROCESSING] dqntky4-Leaf587: post_threading 開始
+2026-07-22 06:28:56 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/01_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:28:56 [PROCESSING] dqntky4-Leaf585: 01_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:02 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/02_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:02 [PROCESSING] dqntky4-Leaf585: 02_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:07 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/03_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:07 [PROCESSING] dqntky4-Leaf585: 03_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:12 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/04_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:12 [PROCESSING] dqntky4-Leaf585: 04_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:17 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/05_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:17 [PROCESSING] dqntky4-Leaf585: 05_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/06_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:22 [PROCESSING] dqntky4-Leaf585: 06_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:28 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/07_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:28 [PROCESSING] dqntky4-Leaf585: 07_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:33 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/08_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:33 [PROCESSING] dqntky4-Leaf585: 08_part_dqntky4-Leaf585_noshut.json を POST 成功
+2026-07-22 06:29:38 [PROCESSING] 2026-07-22 06:29:38 30秒待機中...
+2026-07-22 06:30:08 [PROCESSING] dqntky4-Leaf585: NODE admin 比較=OK, oper 比較=OK
+2026-07-22 06:30:08 [PROCESSING] dqntky4-Leaf585: SPINE admin 比較=OK, oper 比較=OK
+2026-07-22 06:30:08 [PROCESSING] dqntky4-Leaf585: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:30:08 [PROCESSING] dqntky4-Leaf585: enable 正常終了
+2026-07-22 06:30:11 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/01_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:11 [PROCESSING] dqntky4-Leaf551: 01_part_dqntky4-Leaf551_noshut.json を POST 成功
+2026-07-22 06:30:11 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/01_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:11 [PROCESSING] dqntky4-Leaf511: 01_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:11 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/01_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:11 [PROCESSING] dqntky4-Leaf571: 01_part_dqntky4-Leaf571_noshut.json を POST 成功
+2026-07-22 06:30:11 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/01_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:11 [PROCESSING] dqntky4-Leaf501: 01_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:11 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/01_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:11 [PROCESSING] dqntky4-Leaf587: 01_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:30:12 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/01_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:12 [PROCESSING] dqntky4-Leaf521: 01_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:12 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/01_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:12 [PROCESSING] dqntky4-Leaf583: 01_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:16 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/02_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:16 [PROCESSING] dqntky4-Leaf551: 02_part_dqntky4-Leaf551_noshut.json を POST 成功
+2026-07-22 06:30:16 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/02_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:16 [PROCESSING] dqntky4-Leaf511: 02_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:16 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/02_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:16 [PROCESSING] dqntky4-Leaf571: 02_part_dqntky4-Leaf571_noshut.json を POST 成功
+2026-07-22 06:30:16 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/02_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:16 [PROCESSING] dqntky4-Leaf501: 02_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:17 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/02_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:17 [PROCESSING] dqntky4-Leaf587: 02_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:30:17 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/02_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:17 [PROCESSING] dqntky4-Leaf521: 02_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:17 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/02_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:17 [PROCESSING] dqntky4-Leaf583: 02_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:21 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/03_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:21 [PROCESSING] dqntky4-Leaf551: 03_part_dqntky4-Leaf551_noshut.json を POST 成功
+2026-07-22 06:30:21 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/03_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:21 [PROCESSING] dqntky4-Leaf511: 03_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/03_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:22 [PROCESSING] dqntky4-Leaf571: 03_part_dqntky4-Leaf571_noshut.json を POST 成功
+2026-07-22 06:30:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/03_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:22 [PROCESSING] dqntky4-Leaf501: 03_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/03_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:22 [PROCESSING] dqntky4-Leaf587: 03_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:30:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/03_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:22 [PROCESSING] dqntky4-Leaf521: 03_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:22 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/03_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:22 [PROCESSING] dqntky4-Leaf583: 03_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:26 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/04_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:26 [PROCESSING] dqntky4-Leaf551: 04_part_dqntky4-Leaf551_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/04_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf511: 04_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/04_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf571: 04_part_dqntky4-Leaf571_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/04_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf501: 04_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/04_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf587: 04_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/04_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf521: 04_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:27 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/04_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:27 [PROCESSING] dqntky4-Leaf583: 04_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:33 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/05_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:33 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/05_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:33 [PROCESSING] dqntky4-Leaf551: 05_part_dqntky4-Leaf551_noshut.json を POST 成功
+2026-07-22 06:30:33 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/05_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:33 [PROCESSING] dqntky4-Leaf511: 05_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:33 [PROCESSING] dqntky4-Leaf571: 05_part_dqntky4-Leaf571_noshut.json を POST 成功
+2026-07-22 06:30:36 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/05_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:36 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/05_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:36 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/05_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:36 [PROCESSING] dqntky4-Leaf501: 05_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:36 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/05_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:36 [PROCESSING] dqntky4-Leaf587: 05_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:30:36 [PROCESSING] dqntky4-Leaf521: 05_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:36 [PROCESSING] dqntky4-Leaf583: 05_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:38 [PROCESSING] 2026-07-22 06:30:38 30秒待機中...
+2026-07-22 06:30:38 [PROCESSING] 2026-07-22 06:30:38 30秒待機中...
+2026-07-22 06:30:45 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/06_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:45 [PROCESSING] dqntky4-Leaf511: 06_part_dqntky4-Leaf511_noshut.json を POST 成功
+2026-07-22 06:30:50 [PROCESSING] 2026-07-22 06:30:50 30秒待機中...
+2026-07-22 06:30:56 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/06_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:56 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/06_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:56 [PROCESSING] dqntky4-Leaf501: 06_part_dqntky4-Leaf501_noshut.json を POST 成功
+2026-07-22 06:30:56 [PROCESSING] dqntky4-Leaf521: 06_part_dqntky4-Leaf521_noshut.json を POST 成功
+2026-07-22 06:30:57 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/06_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:57 [PROCESSING] dqntky4-Leaf583: 06_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:30:57 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/06_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:57 [PROCESSING] dqntky4-Leaf587: 06_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:31:01 [PROCESSING] 2026-07-22 06:31:01 30秒待機中...
+2026-07-22 06:31:01 [PROCESSING] 2026-07-22 06:31:01 30秒待機中...
+2026-07-22 06:31:02 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/07_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:02 [PROCESSING] dqntky4-Leaf583: 07_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:31:02 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/07_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:02 [PROCESSING] dqntky4-Leaf587: 07_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:31:07 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/08_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:07 [PROCESSING] dqntky4-Leaf583: 08_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:31:07 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/08_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:07 [PROCESSING] dqntky4-Leaf587: 08_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf571: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf551: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf571: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf551: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf571: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:08 [PROCESSING] dqntky4-Leaf571: enable 異常終了
+2026-07-22 06:31:09 [PROCESSING] dqntky4-Leaf551: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:09 [PROCESSING] dqntky4-Leaf551: enable 異常終了
+2026-07-22 06:31:12 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/09_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:12 [PROCESSING] dqntky4-Leaf583: 09_part_dqntky4-Leaf583_noshut.json を POST 成功
+2026-07-22 06:31:12 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/09_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:12 [PROCESSING] dqntky4-Leaf587: 09_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:31:17 [PROCESSING] 2026-07-22 06:31:17 30秒待機中...
+2026-07-22 06:31:18 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/10_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:18 [PROCESSING] dqntky4-Leaf587: 10_part_dqntky4-Leaf587_noshut.json を POST 成功
+2026-07-22 06:31:20 [PROCESSING] dqntky4-Leaf511: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:21 [PROCESSING] dqntky4-Leaf511: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:21 [PROCESSING] dqntky4-Leaf511: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:21 [PROCESSING] dqntky4-Leaf511: enable 異常終了
+2026-07-22 06:31:23 [PROCESSING] 2026-07-22 06:31:23 30秒待機中...
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf501: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf521: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf501: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf521: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf501: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf501: enable 異常終了
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf521: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:32 [PROCESSING] dqntky4-Leaf521: enable 異常終了
+2026-07-22 06:31:47 [PROCESSING] dqntky4-Leaf583: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:47 [PROCESSING] dqntky4-Leaf583: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:48 [PROCESSING] dqntky4-Leaf583: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:48 [PROCESSING] dqntky4-Leaf583: enable 異常終了
+2026-07-22 06:31:53 [PROCESSING] dqntky4-Leaf587: NODE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:53 [PROCESSING] dqntky4-Leaf587: SPINE admin 比較=NG, oper 比較=NG
+2026-07-22 06:31:53 [PROCESSING] dqntky4-Leaf587: APICと非接続のためAPIC向けポート比較スキップ
+2026-07-22 06:31:53 [PROCESSING] dqntky4-Leaf587: enable 異常終了
+2026-07-22 06:31:53 [PROCESSING] BL-SWトラフィック確認: 無効(スキップ)
+2026-07-22 06:31:53 [PROCESSING] ノード組み込み 完了

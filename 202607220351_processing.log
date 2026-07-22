@@ -1,0 +1,116 @@
+2026-07-22 03:54:13 [PROCESSING] ログ初期化: /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/202607220351_processing.log, /home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/202607220351_detail.log
+2026-07-22 03:54:13 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf501
+2026-07-22 03:54:14 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:54:14 [PROCESSING] dqntky4-Leaf501: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:54:14 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf501
+2026-07-22 03:54:15 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:54:15 [PROCESSING] dqntky4-Leaf501: shutdown/noshut 生成
+2026-07-22 03:54:16 [PROCESSING] dqntky4-Leaf501: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:54:16 [PROCESSING] dqntky4-Leaf501: before 状態採取完了（leaf）
+2026-07-22 03:54:16 [PROCESSING] dqntky4-Leaf501: shutdown投入開始
+2026-07-22 03:54:16 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/dqntky4-Leaf501_shutdown.json
+2026-07-22 03:54:16 [PROCESSING] dqntky4-Leaf501: shutdown投入完了
+2026-07-22 03:54:21 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf501
+2026-07-22 03:54:22 [PROCESSING] APIC接続成功: apic_ip=172.30.228.197, apic=dqntky4-SdnSv02
+2026-07-22 03:54:27 [PROCESSING] dqntky4-Leaf501: after 状態採取完了（leaf）
+2026-07-22 03:54:27 [PROCESSING] dqntky4-Leaf501: SSHログ採取開始（leaf）
+2026-07-22 03:55:04 [PROCESSING] dqntky4-Leaf501: SSHログ採取完了（leaf）
+2026-07-22 03:55:04 [PROCESSING] dqntky4-Leaf511: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:55:04 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf511
+2026-07-22 03:55:05 [PROCESSING] APIC接続成功: apic_ip=172.30.228.197, apic=dqntky4-SdnSv02
+2026-07-22 03:55:05 [PROCESSING] dqntky4-Leaf511: shutdown/noshut 生成
+2026-07-22 03:55:05 [PROCESSING] dqntky4-Leaf511: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:55:06 [PROCESSING] dqntky4-Leaf511: before 状態採取完了（leaf）
+2026-07-22 03:55:06 [PROCESSING] dqntky4-Leaf511: shutdown投入開始
+2026-07-22 03:55:06 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/dqntky4-Leaf511_shutdown.json
+2026-07-22 03:55:06 [PROCESSING] dqntky4-Leaf511: shutdown投入完了
+2026-07-22 03:55:11 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf511
+2026-07-22 03:55:12 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:55:17 [PROCESSING] dqntky4-Leaf511: after 状態採取完了（leaf）
+2026-07-22 03:55:17 [PROCESSING] dqntky4-Leaf511: SSHログ採取開始（leaf）
+2026-07-22 03:55:53 [PROCESSING] dqntky4-Leaf511: SSHログ採取完了（leaf）
+2026-07-22 03:55:53 [PROCESSING] dqntky4-Leaf521: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:55:53 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf521
+2026-07-22 03:55:53 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:55:54 [PROCESSING] dqntky4-Leaf521: shutdown/noshut 生成
+2026-07-22 03:55:54 [PROCESSING] dqntky4-Leaf521: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:55:54 [PROCESSING] dqntky4-Leaf521: before 状態採取完了（leaf）
+2026-07-22 03:55:54 [PROCESSING] dqntky4-Leaf521: shutdown投入開始
+2026-07-22 03:55:54 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/dqntky4-Leaf521_shutdown.json
+2026-07-22 03:55:54 [PROCESSING] dqntky4-Leaf521: shutdown投入完了
+2026-07-22 03:55:59 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf521
+2026-07-22 03:56:00 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:56:06 [PROCESSING] dqntky4-Leaf521: after 状態採取完了（leaf）
+2026-07-22 03:56:06 [PROCESSING] dqntky4-Leaf521: SSHログ採取開始（leaf）
+2026-07-22 03:56:40 [PROCESSING] dqntky4-Leaf521: SSHログ採取完了（leaf）
+2026-07-22 03:56:40 [PROCESSING] dqntky4-Leaf551: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:56:40 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf551
+2026-07-22 03:56:41 [PROCESSING] APIC接続成功: apic_ip=172.30.228.197, apic=dqntky4-SdnSv02
+2026-07-22 03:56:41 [PROCESSING] dqntky4-Leaf551: shutdown/noshut 生成
+2026-07-22 03:56:41 [PROCESSING] dqntky4-Leaf551: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:56:42 [PROCESSING] dqntky4-Leaf551: before 状態採取完了（leaf）
+2026-07-22 03:56:42 [PROCESSING] dqntky4-Leaf551: shutdown投入開始
+2026-07-22 03:56:42 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/dqntky4-Leaf551_shutdown.json
+2026-07-22 03:56:42 [PROCESSING] dqntky4-Leaf551: shutdown投入完了
+2026-07-22 03:56:47 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf551
+2026-07-22 03:56:48 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:56:53 [PROCESSING] dqntky4-Leaf551: after 状態採取完了（leaf）
+2026-07-22 03:56:53 [PROCESSING] dqntky4-Leaf551: SSHログ採取開始（leaf）
+2026-07-22 03:57:28 [PROCESSING] dqntky4-Leaf551: SSHログ採取完了（leaf）
+2026-07-22 03:57:28 [PROCESSING] dqntky4-Leaf571: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:57:28 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf571
+2026-07-22 03:57:29 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:57:30 [PROCESSING] dqntky4-Leaf571: shutdown/noshut 生成
+2026-07-22 03:57:30 [PROCESSING] dqntky4-Leaf571: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:57:30 [PROCESSING] dqntky4-Leaf571: before 状態採取完了（leaf）
+2026-07-22 03:57:30 [PROCESSING] dqntky4-Leaf571: shutdown投入開始
+2026-07-22 03:57:30 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/dqntky4-Leaf571_shutdown.json
+2026-07-22 03:57:30 [PROCESSING] dqntky4-Leaf571: shutdown投入完了
+2026-07-22 03:57:35 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf571
+2026-07-22 03:57:36 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:57:41 [PROCESSING] dqntky4-Leaf571: after 状態採取完了（leaf）
+2026-07-22 03:57:42 [PROCESSING] dqntky4-Leaf571: SSHログ採取開始（leaf）
+2026-07-22 03:58:13 [PROCESSING] dqntky4-Leaf571: SSHログ採取完了（leaf）
+2026-07-22 03:58:13 [PROCESSING] dqntky4-Leaf583: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:58:13 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf583
+2026-07-22 03:58:14 [PROCESSING] APIC接続成功: apic_ip=172.30.228.197, apic=dqntky4-SdnSv02
+2026-07-22 03:58:14 [PROCESSING] dqntky4-Leaf583: shutdown/noshut 生成
+2026-07-22 03:58:14 [PROCESSING] dqntky4-Leaf583: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:58:14 [PROCESSING] dqntky4-Leaf583: before 状態採取完了（leaf）
+2026-07-22 03:58:14 [PROCESSING] dqntky4-Leaf583: shutdown投入開始
+2026-07-22 03:58:15 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/dqntky4-Leaf583_shutdown.json
+2026-07-22 03:58:15 [PROCESSING] dqntky4-Leaf583: shutdown投入完了
+2026-07-22 03:58:20 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf583
+2026-07-22 03:58:21 [PROCESSING] APIC接続成功: apic_ip=172.30.228.197, apic=dqntky4-SdnSv02
+2026-07-22 03:58:26 [PROCESSING] dqntky4-Leaf583: after 状態採取完了（leaf）
+2026-07-22 03:58:26 [PROCESSING] dqntky4-Leaf583: SSHログ採取開始（leaf）
+2026-07-22 03:58:36 [PROCESSING] dqntky4-Leaf583: SSHログ採取完了（leaf）
+2026-07-22 03:58:36 [PROCESSING] dqntky4-Leaf585: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:58:36 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf585
+2026-07-22 03:58:37 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:58:37 [PROCESSING] dqntky4-Leaf585: shutdown/noshut 生成
+2026-07-22 03:58:38 [PROCESSING] dqntky4-Leaf585: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:58:38 [PROCESSING] dqntky4-Leaf585: before 状態採取完了（leaf）
+2026-07-22 03:58:38 [PROCESSING] dqntky4-Leaf585: shutdown投入開始
+2026-07-22 03:58:38 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/dqntky4-Leaf585_shutdown.json
+2026-07-22 03:58:38 [PROCESSING] dqntky4-Leaf585: shutdown投入完了
+2026-07-22 03:58:43 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf585
+2026-07-22 03:58:44 [PROCESSING] APIC接続成功: apic_ip=172.30.228.198, apic=dqntky4-SdnSv03
+2026-07-22 03:58:49 [PROCESSING] dqntky4-Leaf585: after 状態採取完了（leaf）
+2026-07-22 03:58:49 [PROCESSING] dqntky4-Leaf585: SSHログ採取開始（leaf）
+2026-07-22 03:59:00 [PROCESSING] dqntky4-Leaf585: SSHログ採取完了（leaf）
+2026-07-22 03:59:00 [PROCESSING] dqntky4-Leaf587: 処理開始 (scenario=disable, type=leaf)
+2026-07-22 03:59:00 [PROCESSING] APIC接続試行: token_node=dqntky4-Leaf587
+2026-07-22 03:59:00 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:59:01 [PROCESSING] dqntky4-Leaf587: shutdown/noshut 生成
+2026-07-22 03:59:01 [PROCESSING] dqntky4-Leaf587: APICと非接続のためAPIC向けポート採取スキップ
+2026-07-22 03:59:01 [PROCESSING] dqntky4-Leaf587: before 状態採取完了（leaf）
+2026-07-22 03:59:01 [PROCESSING] dqntky4-Leaf587: shutdown投入開始
+2026-07-22 03:59:02 [PROCESSING] POST成功 /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/dqntky4-Leaf587_shutdown.json
+2026-07-22 03:59:02 [PROCESSING] dqntky4-Leaf587: shutdown投入完了
+2026-07-22 03:59:07 [PROCESSING] APIC接続試行（shutdown後）: token_node=dqntky4-Leaf587
+2026-07-22 03:59:07 [PROCESSING] APIC接続成功: apic_ip=172.30.228.196, apic=dqntky4-SdnSv01
+2026-07-22 03:59:13 [PROCESSING] dqntky4-Leaf587: after 状態採取完了（leaf）
+2026-07-22 03:59:13 [PROCESSING] dqntky4-Leaf587: SSHログ採取開始（leaf）
+2026-07-22 03:59:23 [PROCESSING] dqntky4-Leaf587: SSHログ採取完了（leaf）
+2026-07-22 03:59:23 [PROCESSING] BL-SWトラフィック確認: 無効(スキップ)

@@ -1,0 +1,86 @@
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf511: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf521: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf501: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf551: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf571: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf585: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf583: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583
+2026-07-22 06:28:40 [DETAIL] dqntky4-Leaf587: node_directory=/home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587
+2026-07-22 06:28:56 [DETAIL] dqntky4-Leaf585: node_id=1585, pod_id=1
+2026-07-22 06:28:56 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/01_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:02 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/02_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:07 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/03_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:12 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/04_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:17 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/05_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:22 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/06_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:28 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/07_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:29:33 [DETAIL] dqntky4-Leaf585: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf585/08_part_dqntky4-Leaf585_noshut.json
+2026-07-22 06:30:08 [DETAIL] dqntky4-Leaf585: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf585_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf585_enable_after_oper_statuses.json
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf571: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf551: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf511: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf501: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf587: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf521: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf583: node_id=None, pod_id=None
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf551: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/01_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/01_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf571: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/01_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/01_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:11 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/01_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:12 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/01_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:12 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/01_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:16 [DETAIL] dqntky4-Leaf551: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/02_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:16 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/02_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:16 [DETAIL] dqntky4-Leaf571: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/02_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:16 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/02_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:17 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/02_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:17 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/02_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:17 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/02_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:21 [DETAIL] dqntky4-Leaf551: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/03_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:21 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/03_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:22 [DETAIL] dqntky4-Leaf571: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/03_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:22 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/03_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:22 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/03_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:22 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/03_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:22 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/03_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:26 [DETAIL] dqntky4-Leaf551: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/04_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/04_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf571: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/04_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/04_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/04_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/04_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:27 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/04_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:33 [DETAIL] dqntky4-Leaf551: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf551/05_part_dqntky4-Leaf551_noshut.json
+2026-07-22 06:30:33 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/05_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:33 [DETAIL] dqntky4-Leaf571: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf571/05_part_dqntky4-Leaf571_noshut.json
+2026-07-22 06:30:36 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/05_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:36 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/05_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:36 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/05_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:36 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/05_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:30:45 [DETAIL] dqntky4-Leaf511: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf511/06_part_dqntky4-Leaf511_noshut.json
+2026-07-22 06:30:56 [DETAIL] dqntky4-Leaf501: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf501/06_part_dqntky4-Leaf501_noshut.json
+2026-07-22 06:30:56 [DETAIL] dqntky4-Leaf521: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf521/06_part_dqntky4-Leaf521_noshut.json
+2026-07-22 06:30:57 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/06_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:30:57 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/06_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:02 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/07_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:02 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/07_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:07 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/08_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:07 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/08_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:08 [DETAIL] dqntky4-Leaf571: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf571_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf571_enable_after_oper_statuses.json
+2026-07-22 06:31:08 [DETAIL] dqntky4-Leaf551: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf551_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf551_enable_after_oper_statuses.json
+2026-07-22 06:31:08 [DETAIL] dqntky4-Leaf571: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:09 [DETAIL] dqntky4-Leaf551: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:12 [DETAIL] dqntky4-Leaf583: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf583/09_part_dqntky4-Leaf583_noshut.json
+2026-07-22 06:31:12 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/09_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:18 [DETAIL] dqntky4-Leaf587: POST OK -> /home/kddi/scripts/nodeshut_vup/run/OrderGroup_Template_Leaf_TM-0408690-2/dqntky4-Leaf587/10_part_dqntky4-Leaf587_noshut.json
+2026-07-22 06:31:20 [DETAIL] dqntky4-Leaf511: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf511_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf511_enable_after_oper_statuses.json
+2026-07-22 06:31:21 [DETAIL] dqntky4-Leaf511: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:31 [DETAIL] dqntky4-Leaf501: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf501_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf501_enable_after_oper_statuses.json
+2026-07-22 06:31:31 [DETAIL] dqntky4-Leaf521: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf521_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf521_enable_after_oper_statuses.json
+2026-07-22 06:31:32 [DETAIL] dqntky4-Leaf501: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:32 [DETAIL] dqntky4-Leaf521: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:47 [DETAIL] dqntky4-Leaf583: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf583_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf583_enable_after_oper_statuses.json
+2026-07-22 06:31:48 [DETAIL] dqntky4-Leaf583: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分
+2026-07-22 06:31:53 [DETAIL] dqntky4-Leaf587: after_admin=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf587_enable_after_admin_statuses.json, after_oper=/home/kddi/scripts/nodeshut_vup/log/OrderGroup_Template_Leaf_TM-0408690-2/enable/dqntky4-Leaf587_enable_after_oper_statuses.json
+2026-07-22 06:31:53 [DETAIL] dqntky4-Leaf587: 詳細 NG 要因 → admin差分 / oper差分 / Spine向けadmin差分 / Spine向けoper差分

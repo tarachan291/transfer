@@ -1,0 +1,46 @@
+{
+    "status_code": "N00000001",
+    "message": "完了",
+    "results": [
+        {
+            "target_node": "dqntky4-Leaf501",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf501の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf511",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf511の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf521",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf521の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf551",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf551の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf571",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf571の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf583",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf583の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf585",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf585の切り離し正常終了"
+        },
+        {
+            "target_node": "dqntky4-Leaf587",
+            "each_status_code": "N10000002",
+            "message": "dqntky4-Leaf587の切り離し正常終了"
+        }
+    ]
+}
