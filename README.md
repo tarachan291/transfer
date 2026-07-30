@@ -11,6 +11,7 @@ Cisco ACI 環境において、APIC API 経由で Leaf / Spine ノードの切�
 - 差分判定
 - SSH 経由でのコマンドログ採取
 - Module / Diagnostic 結果の解析
+- 切り離し前の vPC 相方（対向 Leaf）ポート状態チェック（Leaf のみ、ON/OFF 可能）
 - BL-SW（BorderLeaf-SpineSwitch 間）トラフィックの正常性確認（Grafana、ON/OFF 可能）
 - ステータス JSON / 各種ログファイルの生成
 
@@ -38,6 +39,7 @@ Cisco ACI 環境において、APIC API 経由で Leaf / Spine ノードの切�
 <script_directory>/
 ├── nodeshut_vup.py
 ├── blsw_traffic_check.py           # BL-SW トラフィック確認（Grafana）
+├── vpc_peer_check.py               # 切り離し前 vPC 相方チェック
 ├── credentials.py
 ├── result_code.py
 ├── apic_leafs.py
@@ -97,6 +99,10 @@ Cisco ACI 環境において、APIC API 経由で Leaf / Spine ノードの切�
 [STEP2/3] ノード切り離し（ノードごとに繰り返し）
   ├─ ホスト毎に token 再取得
   ├─ node_id / pod_id 取得
+  ├─ vPC 相方チェック（vpc_peer_check.check_node）
+  │   ├─ vPC 未構成の Leaf → チェック対象外（OK）
+  │   ├─ local=up かつ remote=down あり → E にして次ノードへ（切り離しスキップ）
+  │   └─ 判定不能 → E にして次ノードへ（安全側）
   ├─ create_leaf_shutdown() で shutdown/noshut JSON 生成
   │   └─ split_file_by_lines() で 5行毎に分割（enable 用）
   ├─ before 状態採取
@@ -266,7 +272,7 @@ finalize_status()
 |---|---|
 | `run_blsw_check(log_directory, uid, hostnames)` | 対象ノードの BL-SW トラフィックを確認し、NG のノードを each_status_code=E に更新（本体側の「つなぎ」） |
 | `blsw_traffic_check.is_enabled()` | 確認機能の ON/OFF（`GRAFANA_CHECK_ENABLED`）を返す |
-| `blsw_traffic_check.check_area(area_network, log)` | Grafana ダッシュボードから IN/OUT の現在値・基準値を取得し OK/NG を返す（判定不能時は `GrafanaCheckError`） |
+| `blsw_traffic_check.check_area(area_network, log)` | Grafana ダッシュボードから IN/OUT の現在値・基準値を取得し OK/NG を返す（低トラフィック救済あり、判定不能時は `GrafanaCheckError`） |
 
 `run_blsw_check` の挙動：
 
@@ -275,6 +281,17 @@ finalize_status()
 - 判定不能（`GrafanaCheckError`）／`area_network` 取得不可は、対象ノードを E にする（安全側）
 - 複数 area_network にまたがらない前提のため、Grafana 確認は 1 回
 - ステータスは要約のみ、現在値・基準値の実数は `<pid>_detail.log` に記録
+
+### 6.7 vPC 相方チェック（切り離し前）
+
+| 関数 | 役割 |
+|---|---|
+| `vpc_peer_check.is_enabled()` | 確認機能の ON/OFF（`VPC_PEER_CHECK_ENABLED`）を返す |
+| `vpc_peer_check.check_node(hostname, apic_ip, token, epg_only, log)` | 対象 Leaf の vPC で「稼働中だが相方 down」を検出し `(ok, detail)` を返す（判定不能時は `VpcPeerCheckError`） |
+
+呼び出しは Leaf Disable ループ内（`if node_type == "leaf":` 直後、shutdown ファイル
+生成の前）。NG の場合は該当ノードのみ `each_status_code=E` にして `continue` し、
+他ノードの切り離しは継続する。
 
 ## 7. 比較ロジックの仕様
 
@@ -328,6 +345,9 @@ status_ok = cmp_admin and cmp_oper and cmp_apic_oper
 - 対象ノードの `area_network`（= Grafana ダッシュボードの検索文言）を DB から取得
 - ダッシュボードの IN / OUT それぞれで「現在値 >= 基準値」を確認
 - IN・OUT の両方が基準値以上なら OK、どちらかが下回れば NG
+- ただし低トラフィック救済（`GRAFANA_LOW_TRAFFIC_OK_GB` 設定時）として、
+  IN / OUT のどちらか一方でも現在値がその値（Gb/s）以下なら、上記が NG でも OK とする
+  （元々ほとんどトラフィックが流れていないポートを NG としないための救済）
 
 実行タイミング：
 
@@ -352,7 +372,51 @@ ON/OFF：`credentials.GRAFANA_CHECK_ENABLED` で切り替え。`False` の場合
 
 - `<pid>_status.json`：要約のみ（例「BL-SWトラフィック確認NG」）
 - `<pid>_processing.log`：area 単位の開始/OK/NG
-- `<pid>_detail.log`：IN/OUT の現在値・基準値の実数（例「IN: 現在値 xx Gb/s >= 基準値 yy Gb/s [OK]」）
+- `<pid>_detail.log`：IN/OUT の現在値・基準値の実数（例「IN: 現在値 xx Gb/s >= 基準値 yy Gb/s [OK]」）。低トラフィック救済が発動した場合はその旨も記録
+
+### 7.5 vPC 相方チェック（`vpc_peer_check`）
+
+Leaf 切り離しの「前」に、対象 Leaf の vPC について相方（vPC 対向 Leaf）が
+落ちていないかを確認する。相方が既に down の状態で切り離すと vPC の両系が
+down となり通信断になるため、事前に検出して当該ノードの切り離しを中止する。
+
+判定ロジック：
+
+- 対象 Leaf の `vpcIf` を取得（`usage=epg`＝サーバ向けのみ）
+- `localOperSt=up` かつ `remoteOperSt=down` のものがあれば NG
+- 両系 down（`local=down` / `remote=down`）は稼働していないため対象外
+- vPC を 1 本も持たない Leaf（vPC 未構成）は対象外として OK を返す
+
+検出時は、両系の po 番号・物理ポートを `pcAggrIf` / `pcRsMbrIfs` から取得して
+詳細ログに出力する（両系でポート番号が異なる場合も vPC 名で正しく対応付ける）。
+
+| local / remote | 判定 | 理由 |
+|---|---|---|
+| up / down | **NG** | 切り離すと両系 down = 断 |
+| up / up | OK | 相方が受けられる |
+| down / up | OK | 既に自系 down、相方が稼働中 |
+| down / down | OK（対象外） | 元々稼働していない |
+
+NG 時の扱い：
+
+- 該当ノードの `each_status_code` を `E`（`{hostname}の切り離し失敗（vPC相方チェックNG: ...）`）
+- **shutdown は投入せず** `continue` で次のノードへ（他ノードの切り離しは継続）
+- 判定不能（APIC 通信失敗・node_id 解決不可）も安全側として E
+
+ON/OFF：`credentials.VPC_PEER_CHECK_ENABLED` で切り替え。
+
+出力先の使い分け：
+
+- `<pid>_status.json`：要約（該当 vPC 名を含む）
+- `<pid>_processing.log`：チェック開始 / OK / NG / 判定不能
+- `<pid>_detail.log`：`[VPC]` プレフィックスで vPC 本数・該当 vPC の両系ポート詳細
+
+単体実行も可能（実環境での事前確認用）：
+
+```
+python3 vpc_peer_check.py --apic <APIC_IP> --user <USER> \
+    --target-hosts <Leaf名1>,<Leaf名2>
+```
 
 ## 8. エラー処理方針
 
@@ -364,6 +428,7 @@ ON/OFF：`credentials.GRAFANA_CHECK_ENABLED` で切り替え。`False` の場合
 | Disable ループ内の各種失敗（APIC 接続／POST／SSH／Module／Diag／reload／APIC 片寄 等） | 該当ノードのみ `each_status_code=E` に更新して `continue`（他ノードは処理継続） |
 | Disable のループ内例外 | `try/except Exception` でノード単位の異常終了、次のノードへ |
 | POST 失敗 | リトライ 3 回後、ノード単位で異常終了 → `continue` |
+| vPC 相方チェック NG／判定不能（Leaf disable） | 該当ノードを `each_status_code=E` にして `continue`（shutdown は投入しない） |
 | BL-SW トラフィック NG／判定不能 | 該当ノードを `each_status_code=E`（既に E のノードはスキップ） |
 | Enable の post_threading 内例外 | ノード単位の異常終了、他スレッドは継続 |
 
@@ -389,18 +454,175 @@ ON/OFF：`credentials.GRAFANA_CHECK_ENABLED` で切り替え。`False` の場合
 | `PROTOCOL` | `http` or `https` |
 | `AFTER_ENABLE_DISABLE_SLEEP` | shutdown/noshut 後の待機秒 |
 | `POST_FILE_SLEEP_INTERVAL` | POST 間の待機秒 |
+| `VPC_PEER_CHECK_ENABLED` | 切り離し前 vPC 相方チェックの ON/OFF（`True`/`False`） |
 | `GRAFANA_CHECK_ENABLED` | BL-SW トラフィック確認の ON/OFF（`True`/`False`） |
 | `GRAFANA_URL` / `GRAFANA_USER` / `GRAFANA_PASSWORD` | Grafana 接続情報 |
 | `GRAFANA_PANEL_IN_CURRENT` / `GRAFANA_PANEL_IN_BASELINE` | IN の現在値／基準値パネル名 |
 | `GRAFANA_PANEL_OUT_CURRENT` / `GRAFANA_PANEL_OUT_BASELINE` | OUT の現在値／基準値パネル名 |
+| `GRAFANA_LOW_TRAFFIC_OK_GB` | 低トラフィック救済しきい値（Gb/s）。IN/OUT のいずれかが以下なら NG でも OK。未設定なら救済なし |
 
 ## 11. 依存モジュール
 
 - `requests` / `urllib3` / `paramiko` / `psycopg2`
-- ローカル: `credentials` / `result_code` / `apic_leafs` / `blsw_traffic_check`
+- ローカル: `credentials` / `result_code` / `apic_leafs` / `blsw_traffic_check` / `vpc_peer_check`
 
 ## 12. 既知の制約
 
 - `wait_for_spine_status` は 30 分タイムアウト、毎 60 秒チェック（APIC は毎回選び直し）
 - `time.sleep(300)` 等のマジックナンバーが点在しており、調整は直接コード編集が必要
 - `main()` は 1700 行超でネスト深く、保守性に課題あり（リファクタ候補）
+- BL-SW 確認は複数 `area_network` にまたがらない前提（1 回のみ確認）。将来またがる構成が出た場合は area 単位のループ化が必要
+- vPC 相方チェックは vPC 未構成の Leaf を対象外（OK 扱い）とするため、非 vPC（片系）サーバの断は検出できない
+
+## 全体フロー
+
+```mermaid
+flowchart TD
+    A([ツール起動]) --> B["引数取得<br/>target_nodes / pid / scenario_id<br/>type / order_group"]
+    B --> C{"引数は正常？"}
+
+    C -- No --> E1["クライアントエラーを<br/>status.jsonへ記録"]
+    E1 --> Z1([異常終了])
+
+    C -- Yes --> D{"scenario_id"}
+    D -- disable --> D1["ログ・ステータスを新規作成"]
+    D -- enable --> D2{"order_groupの<br/>既存データがある？"}
+
+    D2 -- No --> E2["ID不明エラーを記録"]
+    E2 --> Z1
+    D2 -- Yes --> D3["enable用ログを作成"]
+
+    D1 --> H{"hostnameが<br/>許可リスト内？"}
+    D3 --> H
+    H -- No --> E3["hostnameエラーを記録"]
+    E3 --> Z1
+
+    H -- Yes --> I["APICへ接続して<br/>トークン取得"]
+    I --> J{"APIC接続成功？"}
+    J -- No --> E4["全対象ノードをエラー更新"]
+    E4 --> Z1
+
+    J -- Yes --> K{"scenario_id"}
+    K -- disable --> L{"ノード種別"}
+    L -- leaf --> M["Leaf切り離し処理<br/>（vPC相方チェック込み）"]
+    L -- spine --> N["Spine切り離し処理"]
+
+    K -- enable --> O["対象ノードごとに<br/>並列で組み込み処理"]
+
+    M --> P["BL-SWトラフィック確認"]
+    N --> Q["状態・ログ・診断・<br/>トラフィックの総合判定"]
+    O --> R["disable前とenable後の<br/>状態を比較"]
+
+    P --> S["最終ステータス集計"]
+    Q --> S
+    R --> T["BL-SWトラフィック確認"]
+    T --> S
+
+    S --> U{"全ノード正常？"}
+    U -- Yes --> V([正常終了])
+    U -- No --> W([エラー終了])
+```
+
+## disable（切り離し）
+
+```mermaid
+flowchart TD
+    A([disable開始]) --> B{"ノード種別"}
+
+    B -- Leaf --> L1["ノードID・Pod ID取得"]
+    L1 --> V1{"vPC相方チェックが有効？"}
+    V1 -- No --> L2
+    V1 -- Yes --> V2["対象Leafの vPC を確認<br/>（usage=epg）"]
+    V2 --> V3{"vPC未構成？"}
+    V3 -- Yes --> L2
+    V3 -- No --> V4{"稼働中(up)かつ<br/>相方down のvPCあり？"}
+    V4 -- Yes --> ERR["対象ノードをエラー更新<br/>（切り離しスキップ）"]
+    V4 -- No --> L2["shutdown / noshutファイル生成"]
+
+    L2 --> L3["Leaf・Spine・APIC向け<br/>ポートの事前状態採取"]
+    L3 --> L4{"事前状態は正常？"}
+    L4 -- No --> ERR
+    L4 -- Yes --> L5["shutdown設定をAPICへPOST"]
+    L5 --> L6{"POST成功？"}
+    L6 -- No --> ERR
+    L6 -- Yes --> L7["APICへ再接続"]
+    L7 --> L8["切り離し後の状態採取<br/>対象ポート: down<br/>維持ポート: up"]
+    L8 --> L9{"状態は想定どおり？"}
+    L9 -- No --> ERR
+    L9 -- Yes --> L10["LeafへSSH接続し<br/>確認ログを採取"]
+    L10 --> OK["ノード正常終了"]
+
+    B -- Spine --> S1["全Spineから<br/>事前SSHログを並列採取"]
+    S1 --> S2["Module・Diagnostic確認"]
+    S2 --> S3{"診断正常？"}
+    S3 -- No --> ERR
+    S3 -- Yes --> S4["APIC接続経路の<br/>片寄せ設定をPOST"]
+    S4 --> S5["APICポート状態確認"]
+    S5 --> S6{"状態は想定どおり？"}
+    S6 -- No --> ERR
+    S6 -- Yes --> S7["Spine用shutdown /<br/>noshutファイル生成"]
+    S7 --> S8["Spineをreload"]
+    S8 --> S9{"inactiveになった？<br/>最大30分待機"}
+    S9 -- No --> ERR
+    S9 -- Yes --> S10["他Spineのログ採取"]
+    S10 --> S11["shutdown設定をAPICへPOST"]
+    S11 --> S12{"activeへ復帰した？<br/>最大30分待機"}
+    S12 -- No --> ERR
+    S12 -- Yes --> S13["事後SSHログ・状態を採取"]
+    S13 --> S14["事前／事後ログ比較<br/>Module・Diagnostic確認"]
+    S14 --> S15{"全確認正常？"}
+    S15 -- No --> ERR
+    S15 -- Yes --> S16{"BL-SW確認が有効？"}
+    S16 -- No --> OK
+    S16 -- Yes --> S17["Grafana経由で<br/>トラフィック確認"]
+    S17 --> S18{"トラフィック正常？"}
+    S18 -- Yes --> OK
+    S18 -- No --> ERR
+
+    ERR --> FIN["最終ステータス集計"]
+    OK --> FIN
+    FIN --> END([disable終了])
+```
+
+## enable（組み込み）
+
+```mermaid
+flowchart TD
+    A([enable開始]) --> B{"run/order_group<br/>ディレクトリがある？"}
+    B -- No --> ERR["全対象ノードをエラー更新"]
+    B -- Yes --> C["対象ノードごとに<br/>post_threadingを並列実行"]
+
+    C --> D{"ノード用データがある？"}
+    D -- No --> NERR["対象ノードをエラー更新"]
+    D -- Yes --> E["noshut分割ファイルを取得"]
+
+    E --> F["ノードID・Pod ID取得"]
+    F --> G["noshutファイルを<br/>順番にAPICへPOST"]
+    G --> H{"全POST成功？"}
+    H -- No --> NERR
+
+    H -- Yes --> I{"Spine？"}
+    I -- Yes --> J["APIC片寄解除用<br/>noshutをPOST"]
+    I -- No --> K["状態安定待ち"]
+    J --> K
+
+    K --> L["enable後のadmin / oper状態を採取"]
+    L --> M{"ノード種別"}
+
+    M -- Leaf --> L1["ノード・Spine向け・APIC向けを<br/>disable前の状態と比較"]
+    M -- Spine --> S1["ノード・APIC operを<br/>disable前の状態と比較"]
+
+    L1 --> P{"全比較一致？"}
+    S1 --> P
+    P -- No --> NERR
+    P -- Yes --> OK["対象ノード正常終了"]
+
+    NERR --> JOIN["全スレッド終了待ち"]
+    OK --> JOIN
+    JOIN --> BL["BL-SWトラフィック確認"]
+    BL --> FIN["全ノードのステータス集計"]
+    ERR --> FIN
+    FIN --> END([enable終了])
+```
+
+主なエラー経路では、処理ログ・詳細ログ・`status.json`を更新し、最後に各ノードの結果から全体ステータスを確定する。
