@@ -22,8 +22,13 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 #
 # シナリオと投入先 MO:
 #   decommission : uni/fabric/outofsvc          fabricRsDecommissionNode (created,modified)
+#                  removeFromController=false。APIC に登録を残す
+#   remove       : uni/fabric/outofsvc          fabricRsDecommissionNode (created,modified)
+#                  removeFromController=true。APIC から登録ごと削除する
 #   commission   : uni/fabric/outofsvc          fabricRsDecommissionNode (deleted)
+#                  decommission からの復旧
 #   register     : uni/controller/nodeidentpol  fabricNodeIdentP         (created)
+#                  remove からの復旧（筐体交換で serial のみ変わる）
 #
 # デコミッション実行時に node_id / pod_id / serial / role / model / version /
 # Forwarding Scale Profile を run/{order_group}/{hostname}_nodeinfo.json に、
@@ -49,6 +54,11 @@ protocol = config.PROTOCOL
 
 post_sleep_interval = getattr(config, "POST_FILE_SLEEP_INTERVAL", 5)
 
+# 投入後の fabricSt 確認。タイムアウトを 0 にすると状態確認を行わない
+node_status_timeout = getattr(config, "NODE_STATUS_TIMEOUT", 1800)
+decommission_check_interval = getattr(config, "DECOMMISSION_CHECK_INTERVAL", 30)
+restore_check_interval = getattr(config, "RESTORE_CHECK_INTERVAL", 60)
+
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 # シナリオ定義（action 名 / 投入先 MO / 投入後に期待する fabricSt）
@@ -57,17 +67,38 @@ SCENARIO_SPEC = {
         "action": "デコミッション",
         "mo_dn": "uni/fabric/outofsvc",
         "desired_active": False,
+        # removeFromController=false。APIC に登録を残し、コミッションで復旧する
+        "remove_from_controller": False,
+    },
+    "remove": {
+        "action": "ノード削除",
+        "mo_dn": "uni/fabric/outofsvc",
+        "desired_active": False,
+        # removeFromController=true。APIC から登録ごと削除し、新規登録で入れ直す
+        "remove_from_controller": True,
     },
     "commission": {
         "action": "コミッション",
         "mo_dn": "uni/fabric/outofsvc",
         "desired_active": True,
+        "remove_from_controller": False,
     },
     "register": {
         "action": "新規登録",
         "mo_dn": "uni/controller/nodeidentpol",
         "desired_active": True,
+        "remove_from_controller": True,
     },
+}
+
+# 切り離し系（ノード情報を保存する側）と復旧系（読み込む側）
+DECOMMISSION_SCENARIOS = ("decommission", "remove")
+RESTORE_SCENARIOS = ("commission", "register")
+
+# 復旧シナリオが前提とする切り離しシナリオ
+EXPECTED_DECOMMISSION = {
+    "commission": "decommission",
+    "register": "remove",
 }
 
 
@@ -813,7 +844,7 @@ def build_register_payload(hostname, serial, node_id, pod_id, role):
 
 
 def build_payload(scenario, info, hostname, remove_from_controller=False):
-    if scenario == "decommission":
+    if scenario in DECOMMISSION_SCENARIOS:
         return build_decommission_payload(
             info["node_id"], info["pod_id"], remove_from_controller
         )
@@ -917,7 +948,10 @@ def main():
     parser = argparse.ArgumentParser(description="comm_decomm tool")
     parser.add_argument("--target_node", help="target node (1台のみ)")
     parser.add_argument("--pid", help="PID")
-    parser.add_argument("--scenario_id", help="commission, decommission or register")
+    parser.add_argument(
+        "--scenario_id",
+        help="decommission / remove / commission / register",
+    )
     parser.add_argument("--type", help="leaf or spine")
     parser.add_argument("--order_group", help="order group")
     parser.add_argument(
@@ -925,17 +959,6 @@ def main():
         "--serial_number",
         dest="serial_number",
         help="ノードのシリアル番号（scenario_id=register では必須）",
-    )
-    parser.add_argument(
-        "--remove_from_controller",
-        action="store_true",
-        help="decommission 時に APIC から完全に削除する（既定は false）",
-    )
-    parser.add_argument(
-        "--wait_timeout",
-        type=int,
-        default=1800,
-        help="投入後の状態確認タイムアウト秒（0 で待機なし）",
     )
     args = parser.parse_args()
 
@@ -945,8 +968,6 @@ def main():
     node_type = args.type or infer_node_type(hostname)
     pid = args.pid
     serial_number = (args.serial_number or "").strip()
-    remove_from_controller = args.remove_from_controller
-    wait_timeout = args.wait_timeout
 
     log_directory = f"{script_directory}/log/{uid}"
     status_path = f"{log_directory}/{pid}_status.json"
@@ -1002,7 +1023,7 @@ def main():
     spec = SCENARIO_SPEC[scenario]
 
     # コミッション / 新規登録はデコミッション済みの order_group が前提
-    if scenario in ("commission", "register"):
+    if scenario in RESTORE_SCENARIOS:
         if not os.path.exists(log_directory):
             msg = f"指定された order_group '{uid}' が存在しません。"
             print(f"{timestamp()} {msg}")
@@ -1070,7 +1091,7 @@ def main():
         sys.exit(1)
 
     # ノード情報（デコミッション時に保存）が無ければ、この時点で異常終了する
-    if scenario in ("commission", "register"):
+    if scenario in RESTORE_SCENARIOS:
         if not os.path.exists(node_info_path(uid, hostname)):
             msg = f"ID不明: {uid}（{hostname} のノード情報がありません）"
             print(f"{timestamp()} {msg}")
@@ -1105,8 +1126,27 @@ def main():
 
     try:
         # コミッション / 新規登録は、同じ order_group のデコミッション時情報を使う
-        if scenario in ("commission", "register"):
+        if scenario in RESTORE_SCENARIOS:
             info = load_node_info(uid, hostname, log_directory, pid)
+
+            # 切り離し方と復旧方法の組み合わせを確認する
+            # （decommission→commission / remove→register）
+            done = info.get("decommission_scenario", "")
+            expected = EXPECTED_DECOMMISSION[scenario]
+            if done and done != expected:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: 切り離し方と不整合 "
+                    f"(実施={done}, {scenario} が前提とするのは {expected})",
+                )
+                raise RuntimeError(
+                    f"{hostname} は scenario_id={done} で切り離されているため、"
+                    f"{scenario} は実行できません"
+                    f"（{SCENARIO_SPEC[done]['action']} からの復旧は "
+                    f"{[k for k, v in EXPECTED_DECOMMISSION.items() if v == done][0]}）"
+                )
+
             if serial_number:
                 info["serial"] = serial_number
             if not info.get("role"):
@@ -1214,12 +1254,12 @@ def main():
     # ==== STEP2: API 投入 ====
 
     try:
-        payload = build_payload(scenario, info, hostname, remove_from_controller)
+        payload = build_payload(scenario, info, hostname, spec["remove_from_controller"])
 
         # ノード情報は投入前に保存する。
         # 投入後に保存が失敗すると「切り離し済みだが復旧情報が無い」状態になるため、
         # 保存できない場合は APIC へ何も投入せずに異常終了させる。
-        if scenario == "decommission":
+        if scenario in DECOMMISSION_SCENARIOS:
             # 切り離し前の構成を記録として残す（取得できなくても投入は継続する）
             fwd_scale_prof = get_fwd_scale_profile(
                 token, apic_ip, info["node_id"], info["pod_id"]
@@ -1247,7 +1287,8 @@ def main():
                     "node_type": node_type,
                     "order_group": uid,
                     "pid": pid,
-                    "remove_from_controller": bool(remove_from_controller),
+                    "remove_from_controller": spec["remove_from_controller"],
+                    "decommission_scenario": scenario,
                     "decommissioned_at": timestamp(),
                 },
                 log_directory,
@@ -1284,7 +1325,7 @@ def main():
 
         if resp is False:
             # 投入していないので、保存したノード情報は残さない
-            if scenario == "decommission":
+            if scenario in DECOMMISSION_SCENARIOS:
                 remove_node_info(uid, hostname, log_directory, pid)
             fail_and_exit(
                 log_directory, pid, hostname, f"POST失敗: {spec['mo_dn']}"
@@ -1317,14 +1358,18 @@ def main():
             log_detail(log_directory, pid, f"{hostname}: fabricNodeIdentP={ident}")
 
         # fabricSt がシナリオの期待値になるまで待機
-        if wait_timeout > 0:
+        if node_status_timeout > 0:
             expected = "非active" if not spec["desired_active"] else "active"
             log_processing(log_directory, pid, f"{hostname}: fabricSt {expected}待機開始")
             reached = wait_for_node_status(
                 hostname,
                 desired_status=spec["desired_active"],
-                timeout=wait_timeout,
-                interval=30 if scenario == "decommission" else 60,
+                timeout=node_status_timeout,
+                interval=(
+                    decommission_check_interval
+                    if scenario in DECOMMISSION_SCENARIOS
+                    else restore_check_interval
+                ),
             )
             if not reached:
                 log_processing(
