@@ -61,3 +61,9 @@ curl -sk "$APIC/api/class/fabricNode.json" -b cookie.txt | python3 -m json.tool
 
 
 curl -sk "https://$APIC/api/node/class/dhcpClient.json" -b cookie.txt | python3 -m json.tool
+
+
+MEMO
+NODE_STATUS_TIMEOUT	状態確認のタイムアウト秒（0 で確認なし）	1800
+DECOMMISSION_CHECK_INTERVAL	切り離し系の確認間隔	30
+RESTORE_CHECK_INTERVAL	復旧系の確認間隔	60
