@@ -1,52 +1,77 @@
 import argparse
 import os
-import uuid
 import time
 from datetime import datetime
 import re
 import config
-import blsw_traffic_check
-import vpc_peer_check
 import random
-import threading
 import json
-import shutil
 import result_code
-from http import client
 import sys
 import requests
-import subprocess
 import psycopg2
-import paramiko
-import apic_leafs
-from typing import Optional, Dict, Any, List
 import traceback
-import difflib
 import urllib3
-from typing import Tuple, List
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-psql_host = credentials.PSQL_HOST
-psql_db = credentials.PSQL_DB
-psql_user = credentials.PSQL_USER
-psql_password = credentials.PSQL_PASSWORD
+# このスクリプトは、APIC に対する ACI ノード 1 台のデコミッション・
+# コミッション・新規登録を自動化し、投入後の状態確認と
+# ログ・ステータスファイルの生成までを実施するユーティリティ。
+# main() で引数を受け取り、指定された 1 ノードに対してシナリオを実行する。
+#
+# シナリオと投入先 MO:
+#   decommission : uni/fabric/outofsvc          fabricRsDecommissionNode (created,modified)
+#   commission   : uni/fabric/outofsvc          fabricRsDecommissionNode (deleted)
+#   register     : uni/controller/nodeidentpol  fabricNodeIdentP         (created)
+#
+# デコミッション実行時に node_id / pod_id / serial / role を
+# run/{order_group}/{hostname}_nodeinfo.json に保存し、コミッション / 新規登録は
+# 同じ order_group からそれを読み込む（APIC から消えた後でも値を引き継げる）。
+# したがってコミッション / 新規登録は、デコミッション済みの order_group を
+# 指定することが前提。order_group 自体が無ければクライアントエラー、
+# order_group はあるがノード情報が無ければサーバエラーで終了する。
+# register の serial だけは筐体交換で変わるため --serial-number で受け取る。
+#
+# 投入 payload はファイルを介さず、ツール内で組み立てて直接 POST する。
+# 投入内容は {pid}_detail.log に記録されるため、事後の追跡はそちらを参照する。
 
-apic_username = credentials.USERNAME
-apic_password = credentials.PASSWORD
+psql_host = config.PSQL_HOST
+psql_db = config.PSQL_DB
+psql_user = config.PSQL_USER
+psql_password = config.PSQL_PASSWORD
 
-protocol = credentials.PROTOCOL
+apic_username = config.USERNAME
+apic_password = config.PASSWORD
 
-status_json_lock = threading.Lock()
+protocol = config.PROTOCOL
+
+post_sleep_interval = getattr(config, "POST_FILE_SLEEP_INTERVAL", 5)
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# シナリオ定義（action 名 / 投入先 MO / 投入後に期待する fabricSt）
+SCENARIO_SPEC = {
+    "decommission": {
+        "action": "デコミッション",
+        "mo_dn": "uni/fabric/outofsvc",
+        "desired_active": False,
+    },
+    "commission": {
+        "action": "コミッション",
+        "mo_dn": "uni/fabric/outofsvc",
+        "desired_active": True,
+    },
+    "register": {
+        "action": "新規登録",
+        "mo_dn": "uni/controller/nodeidentpol",
+        "desired_active": True,
+    },
+}
 
 
 def timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-def log_timestamp():
-    return datetime.now().strftime("%Y%m%d%H%M%S")
 
 
 def log_processing(log_directory, pid, message):
@@ -63,61 +88,64 @@ def log_detail(log_directory, pid, message):
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(f"{timestamp()} [DETAIL] {message}\n")
 
-def fail_all_and_exit(
+
+def fail_and_exit(
     log_directory,
     uid,
-    hostnames,
+    hostname,
     message,
     code=result_code.EACH_STATUS_CODE_SERVER_ERROR,
 ):
-    for h in hostnames:
-        update_node_status(log_directory, uid, h, code, f"{h}: {message}")
+    update_node_status(log_directory, uid, hostname, code, f"{hostname}: {message}")
     finalize_status(log_directory, uid)
     sys.exit(1)
 
+
 def finalize_status(log_directory, uid):
     path = f"{log_directory}/{uid}_status.json"
-    with status_json_lock:
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception as e:
-            print(f"{timestamp()} Failed to finalize status.json: {e}")
-            return
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"{timestamp()} Failed to finalize status.json: {e}")
+        return
 
-        all_success = all(
-            n["each_status_code"].startswith("N") for n in data.get("results", [])
-        )
-        any_error = any(
-            n["each_status_code"].startswith("E") for n in data.get("results", [])
-        )
-        if all_success:
-            data["status_code"] = result_code.STATUS_CODE_SUCCESS
-            data["message"] = "完了"
-        elif any_error:
-            data["status_code"] = result_code.STATUS_CODE_SUCCESS
-            data["message"] = "異常終了を含む"
-        else:
-            data["status_code"] = result_code.STATUS_CODE_SERVER_ERROR
-            data["message"] = "不明"
+    all_success = all(
+        n["each_status_code"].startswith("N") for n in data.get("results", [])
+    )
+    any_error = any(
+        n["each_status_code"].startswith("E") for n in data.get("results", [])
+    )
+    if all_success:
+        data["status_code"] = result_code.STATUS_CODE_SUCCESS
+        data["message"] = "完了"
+    elif any_error:
+        data["status_code"] = result_code.STATUS_CODE_SUCCESS
+        data["message"] = "異常終了を含む"
+    else:
+        data["status_code"] = result_code.STATUS_CODE_SERVER_ERROR
+        data["message"] = "不明"
 
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
 
 def set_client_error_status(
-    log_directory, uid, hostnames, message, code=result_code.STATUS_CODE_CLIENT_ERROR
+    log_directory, uid, hostname, message, code=result_code.STATUS_CODE_CLIENT_ERROR
 ):
     os.makedirs(log_directory, exist_ok=True)
-    # path = f"{log_directory}/{uid}_status.json"
 
-    json_nodes = [
-        {
-            "target_node": h,
-            "each_status_code": code,
-            "message": f"{h}: {message}",
-        }
-        for h in (hostnames or [])
-    ]
+    json_nodes = (
+        [
+            {
+                "target_node": hostname,
+                "each_status_code": code,
+                "message": f"{hostname}: {message}",
+            }
+        ]
+        if hostname
+        else []
+    )
 
     json_data_structure = {
         "status_code": code,
@@ -128,47 +156,35 @@ def set_client_error_status(
     with open(f"{log_directory}/{uid}_status.json", "w", encoding="utf-8") as f:
         json.dump(json_data_structure, f, ensure_ascii=False, indent=4)
 
+
 def update_node_status(log_directory, uid, target_node, status_code, message):
     path = f"{log_directory}/{uid}_status.json"
-    with status_json_lock:
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-        except Exception as e:
-            print(f"{timestamp()} Failed to load status.json: {e}")
-            return
-
-        found = False
-        for node in data.get("results", []):
-            if node["target_node"] == target_node:
-                node["each_status_code"] = status_code
-                node["message"] = message
-                found = True
-                break
-
-        if not found:
-            print(
-                f"{timestamp()} WARNING: Node '{target_node}' not found in status.json"
-            )
-
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
-
-def get_hostname_info(hostname, apic_ip, apic, token):
-    topSystem_url = f'{protocol}://{apic_ip}/api/node/class/topSystem.json?query-target-filter=eq(topSystem.name,"{hostname}")'
-    session = requests.Session()
-    session.verify = False
-    session.headers.update({"Cookie": "APIC-Cookie=" + token})
     try:
-        response = session.get(topSystem_url, proxies={"http": None, "https": None})
-        response.raise_for_status()
-        node_id = response.json()["imdata"][0]["topSystem"]["attributes"]["id"]
-        pod_id = response.json()["imdata"][0]["topSystem"]["attributes"]["podId"]
-        return node_id, pod_id
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
     except Exception as e:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"{now} Failed to get host info. {e}")
-        return None, None
+        print(f"{timestamp()} Failed to load status.json: {e}")
+        return
+
+    found = False
+    for node in data.get("results", []):
+        if node["target_node"] == target_node:
+            node["each_status_code"] = status_code
+            node["message"] = message
+            found = True
+            break
+
+    if not found:
+        print(f"{timestamp()} WARNING: Node '{target_node}' not found in status.json")
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+# ============================================================
+# APIC 接続 / DB アクセス
+# ============================================================
+
 
 def get_token(apic_ip, username, password):
     auth_endpoint = f"{protocol}://{apic_ip}/api/aaaLogin.json"
@@ -184,7 +200,6 @@ def get_token(apic_ip, username, password):
         token = auth_response.json()["imdata"][0]["aaaLogin"]["attributes"]["token"]
         return token
     except Exception as e:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         raise RuntimeError(f"APICログイン失敗 ({apic_ip}): {e}")
 
 
@@ -215,7 +230,9 @@ def check_connection(apic_ips):
     for ip in apic_ips:
         try:
             url = f"{protocol}://{ip}/api/class/topSystem.json"
-            http_response = requests.get(url, proxies={"http": None, "https": None}, verify=False, timeout=10)
+            http_response = requests.get(
+                url, proxies={"http": None, "https": None}, verify=False, timeout=10
+            )
             if http_response.status_code == 403:
                 successful_apic_ips.append(ip)
             else:
@@ -228,75 +245,15 @@ def check_connection(apic_ips):
             print(f"Unable to connect to {ip}. Exception: {e}")
 
     if not successful_apic_ips:
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        raise RuntimeError(f"{now} No reachable APIC IPs found.")
+        raise RuntimeError(f"{timestamp()} No reachable APIC IPs found.")
 
-    apic_ip = random.choice(successful_apic_ips)
-    return apic_ip
+    return random.choice(successful_apic_ips)
 
-
-### FOR TEST ###
-"""def reload_node(
-    token, apic_ip, node_id, pod_id, log_directory=None, uid=None, retries=3, backoff=5
-):
-    # Change later
-    print("Reloading Node")
-    print(f"{apic_ip}, {node_id}, {pod_id}, {log_directory}, {uid}")
-    return True"""
-
-
-def reload_node(token, apic_ip, node_id, pod_id,
-                log_directory=None, uid=None,
-                retries=3, backoff=5):
-
-    # URL you specified:
-    # /api/node/mo/topology/pod-1/node-101/sys/action.json
-    url = f"{protocol}://{apic_ip}/api/node/mo/topology/pod-{pod_id}/node-{node_id}/sys/action.json"
-
-    session = requests.Session()
-    session.verify = False
-    session.headers.update({
-        'Cookie': f'APIC-Cookie={token}',
-        'Content-Type': 'application/json'
-    })
-
-    # Build DNs dynamically
-    dn_ch    = f"topology/pod-{pod_id}/node-{node_id}/sys/ch"
-    dn_lsubj = f"topology/pod-{pod_id}/node-{node_id}/sys/action/lsubj-[{dn_ch}]"
-    dn_task  = f"{dn_lsubj}/eqptChReloadLTask"
-
-    payload = {
-        "actionLSubj": {
-            "attributes": {
-                "dn": dn_lsubj,
-                "oDn": dn_ch
-            },
-            "children": [
-                {
-                    "eqptChReloadLTask": {
-                        "attributes": {
-                            "dn": dn_task,
-                            "adminSt": "start"
-                        },
-                        "children": []
-                    }
-                }
-            ]
-        }
-    }
 
 ### FOR TEST ENVIRONMENT ###
 """def hostname_exists(hostname):
-        #DAI-3
-    #hsts = ["tdqntys1-Leaf705", "tdqntys1-Leaf706", "tdqntys1-Leaf709", "tdqntys1-Leaf710", "tdqntys1-SpSw05", "tdqntys1-SpSw06"]
-
-        #GIJIOYAMA
-    hsts = ["tdqntys1-SpSw01", "tdqntys1-SpSw02", "tdqntys1-Leaf999", "tdqntys1-Leaf002", "tdqntys1-Leaf001", "tdqntys1-Leaf004", "tdqntys1-Leaf003", "tdqntys1-Leaf505", "tdqntys1-Leaf506", "tdqntys1-Leaf601", "tdqntys1-Leaf611", "tdqntys1-Leaf612", "tdqntys1-Leaf622", "tdqntys1-Leaf631", "tdqntys1-Leaf632", "tdqntys1-Leaf701", "tdqntys1-Leaf704", "tdqntys1-Leaf713", "tdqntys1-Leaf714", "tdqntys1-Leaf1981", "tdqntys1-Leaf1982", "tdqntys1-Leaf703", "tdqntys1-Leaf01", "tdqntys1-Leaf03", "tdqntys1-Leaf04", "tdqntys1-Leaf06", "tdqntys1-Leaf05", "tdqntys1-Leaf07", "tdqntys1-Leaf10", "tdqntys1-Leaf09", "tdqntys1-Leaf11", "tdqntys1-Leaf12", "tdqntys1-Leaf14", "tdqntys1-Leaf13", "tdqntys1-Leaf16", "tdqntys1-Leaf19", "tdqntys1-Leaf15", "tdqntys1-Leaf20", "tdqntys1-Leaf21", "tdqntys1-Leaf23", "tdqntys1-Leaf22", "tdqntys1-Leaf24", "tdqntys1-Leaf25", "tdqntys1-Leaf27", "tdqntys1-Leaf26", "tdqntys1-Leaf28", "tdqntys1-Leaf32", "tdqntys1-Leaf31", "tdqntys1-Leaf36", "tdqntys1-Leaf35", "tdqntys1-Leaf37", "tdqntys1-Leaf38", "tdqntys1-Leaf42", "tdqntys1-Leaf41", "tdqntys1-Leaf46", "tdqntys1-Leaf45", "tdqntys1-Leaf47", "tdqntys1-Leaf48", "tdqntys1-Leaf60", "tdqntys1-Leaf62", "tdqntys1-Leaf57", "tdqntys1-Leaf61", "tdqntys1-Leaf63", "tdqntys1-Leaf64", "tdqntys1-Leaf65", "DPI-leaf01", "tdqntys1-Leaf702", "tdqntys1-Leaf621", "tdqntys1-Leaf43", "tdqntys1-Leaf08", "tdqntys1-Leaf44", "tdqntys1-Leaf602"]
-
-    if hostname in hsts:
-        exist_hostname = True
-        if exist_hostname:
-            return hostname"""
+    hsts = ["tdqntys1-Leaf705", "tdqntys1-Leaf706", "tdqntys1-SpSw05", "tdqntys1-SpSw06"]
+    return hostname in hsts"""
 ### FOR TEST ENVIRONMENT ###
 
 
@@ -376,29 +333,396 @@ def apic_select(hostname):
     return apic_ip, apic
 
 
+# ============================================================
+# APIC 情報取得
+# ============================================================
+
+
+def get_hostname_info(hostname, apic_ip, apic, token):
+    topSystem_url = f'{protocol}://{apic_ip}/api/node/class/topSystem.json?query-target-filter=eq(topSystem.name,"{hostname}")'
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(topSystem_url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        node_id = response.json()["imdata"][0]["topSystem"]["attributes"]["id"]
+        pod_id = response.json()["imdata"][0]["topSystem"]["attributes"]["podId"]
+        return node_id, pod_id
+    except Exception as e:
+        print(f"{timestamp()} Failed to get host info. {e}")
+        return None, None
+
+
+def get_fabric_node_info(token, apic_ip, hostname):
+    """fabricNode から node_id / pod_id / serial / role / fabricSt を取得する。
+
+    decommission 済みノードは topSystem から消えるため、こちらを優先して使う。
+    removeFromController=false であれば decommission 後も fabricNode は残る。
+    """
+    fabricNode_url = f'{protocol}://{apic_ip}/api/node/class/fabricNode.json?query-target-filter=eq(fabricNode.name,"{hostname}")'
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(fabricNode_url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+
+        if not imdata:
+            return None
+
+        attrs = imdata[0]["fabricNode"]["attributes"]
+        dn = attrs.get("dn", "")
+        pod_match = re.search(r"pod-(\d+)", dn)
+
+        return {
+            "hostname": hostname,
+            "node_id": attrs.get("id", ""),
+            "pod_id": pod_match.group(1) if pod_match else "1",
+            "serial": attrs.get("serial", ""),
+            "role": attrs.get("role", ""),
+            "fabric_st": attrs.get("fabricSt", ""),
+            "dn": dn,
+        }
+    except Exception as e:
+        print(f"{timestamp()} Failed to get fabricNode info. {e}")
+        return None
+
+
+def node_info_path(uid, hostname):
+    """デコミッション時のノード情報を保存するパス（order_group 単位）。"""
+    return os.path.join(script_directory, "run", uid, f"{hostname}_nodeinfo.json")
+
+
+def save_node_info(uid, hostname, info, log_directory, pid):
+    """デコミッション時のノード情報を JSON で保存する。
+
+    コミッション / 新規登録は同じ order_group からこれを読み込むため、
+    保存できない場合は復旧手段が無くなる。失敗時は None を返し、呼び出し側で
+    投入前に異常終了させること。
+    """
+    path = node_info_path(uid, hostname)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(info, f, ensure_ascii=False, indent=4)
+        log_processing(log_directory, pid, f"{hostname}: ノード情報を保存")
+        log_detail(log_directory, pid, f"{hostname}: nodeinfo={path} {info}")
+        return path
+    except Exception as e:
+        log_processing(log_directory, pid, f"{hostname}: ノード情報の保存に失敗")
+        log_detail(log_directory, pid, f"{hostname}: 保存例外 {type(e).__name__}: {e}")
+        return None
+
+
+def remove_node_info(uid, hostname, log_directory, pid):
+    """投入に失敗した場合に、保存済みノード情報を取り消す。"""
+    path = node_info_path(uid, hostname)
+    try:
+        if os.path.exists(path):
+            os.remove(path)
+            log_processing(log_directory, pid, f"{hostname}: ノード情報を取り消し")
+    except Exception as e:
+        log_detail(log_directory, pid, f"{hostname}: 取消例外 {type(e).__name__}: {e}")
+
+
+def load_node_info(uid, hostname, log_directory, pid):
+    """同じ order_group のデコミッション時ノード情報を読み込む。
+
+    コミッション / 新規登録はこの情報が前提のため、読めない場合は例外を送出する。
+    """
+    path = node_info_path(uid, hostname)
+    if not os.path.exists(path):
+        log_detail(log_directory, pid, f"{hostname}: nodeinfo不在 path={path}")
+        raise RuntimeError(f"ノード情報がありません: {path}")
+
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            info = json.load(f)
+    except Exception as e:
+        log_detail(log_directory, pid, f"{hostname}: 読込例外 {type(e).__name__}: {e}")
+        raise RuntimeError(f"ノード情報の読込に失敗しました: {path}")
+
+    if not info.get("node_id"):
+        log_detail(log_directory, pid, f"{hostname}: nodeinfo={info}")
+        raise RuntimeError(f"ノード情報に node_id がありません: {path}")
+
+    log_processing(log_directory, pid, f"{hostname}: デコミッション時のノード情報を使用")
+    log_detail(log_directory, pid, f"{hostname}: nodeinfo={path} {info}")
+    return info
+
+
+def resolve_node_info(token, apic_ip, apic, hostname, node_type, serial=""):
+    """投入に必要なノード情報を確定する。
+
+    node_id / pod_id / role は fabricNode → topSystem の順に取得する。
+    serial だけは APIC から引けるのが登録済みノードに限られるため、
+    --serial-number で渡された値を使う（未指定なら fabricNode の値）。
+    """
+    info = get_fabric_node_info(token, apic_ip, hostname)
+
+    if not info or not info.get("node_id"):
+        node_id, pod_id = get_hostname_info(hostname, apic_ip, apic, token)
+        info = {
+            "hostname": hostname,
+            "node_id": node_id or "",
+            "pod_id": pod_id or "",
+            "serial": "",
+            "role": "",
+            "fabric_st": "",
+        }
+
+    # serial は引数指定を優先
+    if serial:
+        info["serial"] = serial
+
+    if not info.get("role"):
+        info["role"] = node_type
+    if not info.get("pod_id"):
+        info["pod_id"] = "1"
+
+    return info
+
+
+def get_node_status(token, apic_ip, hostname):
+    """fabricSt が active なら True。MO 自体が無い場合も False。"""
+    fabricNode_url = f'{protocol}://{apic_ip}/api/node/class/fabricNode.json?query-target-filter=eq(fabricNode.name,"{hostname}")'
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(fabricNode_url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+
+        if not imdata:
+            return False
+
+        fabricSt = imdata[0]["fabricNode"]["attributes"]["fabricSt"]
+
+        return fabricSt.lower() == "active"
+
+    except Exception as e:
+        print(f"{timestamp()} Failed to get node status. {e}")
+        return False
+
+
+def get_node_ident(token, apic_ip, serial):
+    """fabricNodeIdentP（ノードID登録）の存在確認。登録済みなら attributes を返す。"""
+    ident_url = f'{protocol}://{apic_ip}/api/node/class/fabricNodeIdentP.json?query-target-filter=eq(fabricNodeIdentP.serial,"{serial}")'
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(ident_url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+
+        if not imdata:
+            return None
+
+        return imdata[0]["fabricNodeIdentP"]["attributes"]
+    except Exception as e:
+        print(f"{timestamp()} Failed to get fabricNodeIdentP. {e}")
+        return None
+
+
+def wait_for_node_status(hostname, desired_status=True, timeout=1800, interval=60):
+    """fabricSt が desired_status（True=active / False=非active or 不在）になるまで待つ。"""
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            new_token, new_apic_ip, _ = get_token_from_random_node(hostname)
+            current = get_node_status(new_token, new_apic_ip, hostname)
+            print(f"[DEBUG] {hostname} current={current}, desired={desired_status}")
+            if current == desired_status:
+                return True
+        except Exception as e:
+            print(f"[DEBUG] wait_for_node_status retry: {type(e).__name__}: {e}")
+        time.sleep(interval)
+    return False
+
+
+# ============================================================
+# POST 系（payload はツール内で組み立てて直接投入する）
+# ============================================================
+
+
+def build_decommission_payload(node_id, pod_id, remove_from_controller=False):
+    return {
+        "fabricRsDecommissionNode": {
+            "attributes": {
+                "tDn": f"topology/pod-{pod_id}/node-{node_id}",
+                "status": "created,modified",
+                "removeFromController": "true" if remove_from_controller else "false",
+            }
+        }
+    }
+
+
+def build_commission_payload(node_id, pod_id):
+    return {
+        "fabricRsDecommissionNode": {
+            "attributes": {
+                "tDn": f"topology/pod-{pod_id}/node-{node_id}",
+                "status": "deleted",
+            }
+        }
+    }
+
+
+def build_register_payload(hostname, serial, node_id, pod_id, role):
+    attributes = {
+        "serial": serial,
+        "nodeId": str(node_id),
+        "name": hostname,
+        "podId": str(pod_id),
+        "status": "created",
+    }
+    if role:
+        attributes["role"] = role
+    return {"fabricNodeIdentP": {"attributes": attributes}}
+
+
+def build_payload(scenario, info, hostname, remove_from_controller=False):
+    if scenario == "decommission":
+        return build_decommission_payload(
+            info["node_id"], info["pod_id"], remove_from_controller
+        )
+    if scenario == "commission":
+        return build_commission_payload(info["node_id"], info["pod_id"])
+    return build_register_payload(
+        hostname,
+        info.get("serial", ""),
+        info["node_id"],
+        info.get("pod_id", "1"),
+        info.get("role", ""),
+    )
+
+
+### FOR TEST ###
+"""def post_mo(token, apic_ip, mo_dn, payload,
+            log_directory=None, uid=None, retries=3, backoff=5):
+    # Change later
+    print(f"POST {mo_dn}: {json.dumps(payload, ensure_ascii=False)}")
+    return True"""
+### FOR TEST ###
+
+
+def post_mo(
+    token, apic_ip, mo_dn, payload, log_directory=None, uid=None, retries=3, backoff=5
+):
+    """任意の MO DN に対して payload（dict）を直接 POST する。
+
+    decommission / commission は uni/fabric/outofsvc、register は
+    uni/controller/nodeidentpol が対象になるため、投入先を引数で指定する。
+    成功時はレスポンス JSON、最終失敗時は False を返す。
+    """
+    url = f"{protocol}://{apic_ip}/api/node/mo/{mo_dn}.json"
+    session = requests.Session()
+    session.verify = False
+    session.headers.update(
+        {"Cookie": f"APIC-Cookie={token}", "Content-Type": "application/json"}
+    )
+
+    log_detail(
+        log_directory,
+        uid,
+        f"POST {url} payload={json.dumps(payload, ensure_ascii=False)}",
+    )
+
+    for attempt in range(1, retries + 1):
+        resp = None
+        try:
+            resp = session.post(
+                url, json=payload, proxies={"http": None, "https": None}, timeout=20
+            )
+            resp.raise_for_status()
+            log_processing(log_directory, uid, f"POST成功 -> {mo_dn}")
+            return resp.json()
+
+        except Exception as e:
+            log_processing(
+                log_directory, uid, f"POST失敗 {mo_dn} (試行{attempt}/{retries})"
+            )
+
+            try:
+                body = resp.text
+            except Exception:
+                body = "NO RESPONSE"
+
+            log_detail(
+                log_directory, uid, f"{mo_dn}: {type(e).__name__}: {e} | body: {body}"
+            )
+
+            if attempt < retries:
+                time.sleep(backoff)
+                continue
+            else:
+                log_processing(log_directory, uid, f"POST最終失敗 {mo_dn}")
+                return False
+
+
+# ============================================================
+# 引数ユーティリティ
+# ============================================================
+
+
+def infer_node_type(hostname):
+    """--type 未指定時に hostname の命名規則から leaf / spine を推定する。"""
+    if not hostname:
+        return None
+    if "Leaf" in hostname or "leaf" in hostname:
+        return "leaf"
+    if "SpSw" in hostname or "spine" in hostname:
+        return "spine"
+    return None
+
+
+# ============================================================
+# main
+# ============================================================
+
+
 def main():
     # ==== 入口処理: 引数を受け取り、最低限のバリデーションを実施 ====
     parser = argparse.ArgumentParser(description="comm_decomm tool")
-    parser.add_argument("--target_node", help="target node")
+    parser.add_argument("--target_node", help="target node (1台のみ)")
     parser.add_argument("--pid", help="PID")
     parser.add_argument("--scenario_id", help="commission, decommission or register")
-    #parser.add_argument("--type", help="leaf or spine")
+    parser.add_argument("--type", help="leaf or spine")
     parser.add_argument("--order_group", help="order group")
+    parser.add_argument(
+        "--serial-number",
+        "--serial_number",
+        dest="serial_number",
+        help="ノードのシリアル番号（scenario_id=register では必須）",
+    )
+    parser.add_argument(
+        "--remove_from_controller",
+        action="store_true",
+        help="decommission 時に APIC から完全に削除する（既定は false）",
+    )
+    parser.add_argument(
+        "--wait_timeout",
+        type=int,
+        default=1800,
+        help="投入後の状態確認タイムアウト秒（0 で待機なし）",
+    )
     args = parser.parse_args()
 
-    hostname = args.target_nodes or []
-    uid = args.order_group  # or str(uuid.uuid4())
+    hostname = (args.target_node or "").strip()
+    uid = args.order_group
     scenario = args.scenario_id
-    node_type = args.type
-    pid = args.pid  # or str(uuid.uuid4())
-
-    #commands_directory = f"{script_directory}/commands/"
+    node_type = args.type or infer_node_type(hostname)
+    pid = args.pid
+    serial_number = (args.serial_number or "").strip()
+    remove_from_controller = args.remove_from_controller
+    wait_timeout = args.wait_timeout
 
     log_directory = f"{script_directory}/log/{uid}"
-    scenario_directory = f"{log_directory}/{scenario}"
-
     status_path = f"{log_directory}/{pid}_status.json"
-    main_log_path = f"{log_directory}/{pid}.log"
     processing_log = f"{log_directory}/{pid}_processing.log"
     detail_log = f"{log_directory}/{pid}_detail.log"
 
@@ -407,11 +731,14 @@ def main():
     if not hostname:
         errors.append("target_node が指定されていません。")
 
-    if scenario not in ("commission", "decommission", "register"):
+    if "," in hostname or re.search(r"\s", hostname):
+        errors.append("target_node は1ノードのみ指定してください。")
+
+    if scenario not in SCENARIO_SPEC:
         errors.append("scenario_id が不明または指定されていません。")
 
-    #if node_type not in ("leaf", "spine"):
-    #    errors.append("type が不正または未指定です。")
+    if node_type not in ("leaf", "spine"):
+        errors.append("type が不正または未指定です。")
 
     if not uid:
         errors.append("order_group が指定されていません。")
@@ -419,19 +746,19 @@ def main():
     if not pid:
         errors.append("PID が指定されていません。")
 
-    #if hostnames and node_type in ("leaf", "spine"):
-    #    """if not all(
-    #        ("Leaf" in h if node_type == "leaf" else "SpSw" in h) for h in hostnames
-    #    ):"""
-    #    if not all(
-    #        (
-    #            ("Leaf" in h or "leaf" in h) if node_type == "leaf" else "SpSw" in h
-    #        ) for h in hostnames
-    #    ):
-    #        errors.append("Node type と hostname の命名規制が一致しません。")
+    if scenario == "register" and not serial_number:
+        errors.append("scenario_id=register では serial-number が必須です。")
 
-    #if node_type == "spine" and len(hostnames) != 1:
-    #    errors.append("type=spine の場合、target_nodes は1ノードのみ指定してください。")
+    if serial_number and not re.fullmatch(r"[A-Za-z0-9]+", serial_number):
+        errors.append("serial-number の形式が不正です。")
+
+    if hostname and node_type in ("leaf", "spine"):
+        if not (
+            ("Leaf" in hostname or "leaf" in hostname)
+            if node_type == "leaf"
+            else "SpSw" in hostname
+        ):
+            errors.append("Node type と hostname の命名規制が一致しません。")
 
     if errors:
         msg = " / ".join(errors)
@@ -445,15 +772,10 @@ def main():
         )
         sys.exit(1)
 
-    if scenario == "decommission":
-        os.makedirs(log_directory, exist_ok=True)
-        os.makedirs(scenario_directory, exist_ok=True)
+    spec = SCENARIO_SPEC[scenario]
 
-    if scenario == "register":
-        os.makedirs(log_directory, exist_ok=True)
-        os.makedirs(scenario_directory, exist_ok=True)
-
-    elif scenario == "commission":
+    # コミッション / 新規登録はデコミッション済みの order_group が前提
+    if scenario in ("commission", "register"):
         if not os.path.exists(log_directory):
             msg = f"指定された order_group '{uid}' が存在しません。"
             print(f"{timestamp()} {msg}")
@@ -466,11 +788,11 @@ def main():
             )
             sys.exit(1)
 
-        os.makedirs(scenario_directory, exist_ok=True)
+    os.makedirs(log_directory, exist_ok=True)
 
     if any(
         os.path.exists(p)
-        for p in [status_path, main_log_path, processing_log, detail_log]
+        for p in [status_path, processing_log, detail_log]
     ):
         msg = f"PID '{pid}' のステータス／ログファイルがすでに存在しています。"
         print(f"{timestamp()} {msg}")
@@ -483,22 +805,19 @@ def main():
         )
         sys.exit(1)
 
-    json_nodes = [
-        {
-            "target_node": hostname,
-            "each_status_code": result_code.EACH_STATUS_CODE_IN_PROGRESS,
-            "message": f"{hostname}の処理中",
-        }
-        for hostname in (hostname or [])
-    ]
-
     json_data_structure = {
         "status_code": result_code.STATUS_CODE_SUCCESS,
         "message": "処理中",
-        "results": json_nodes,
+        "results": [
+            {
+                "target_node": hostname,
+                "each_status_code": result_code.EACH_STATUS_CODE_IN_PROGRESS,
+                "message": f"{hostname}の処理中",
+            }
+        ],
     }
 
-    with open(f"{log_directory}/{pid}_status.json", "w") as f:
+    with open(status_path, "w") as f:
         json.dump(json_data_structure, f, ensure_ascii=False, indent=4)
 
     for name in ["processing", "detail"]:
@@ -507,15 +826,10 @@ def main():
     log_processing(
         log_directory,
         pid,
-        f"ログ初期化: {log_directory}/{pid}_processing.log, {log_directory}/{pid}_detail.log",
+        f"ログ初期化: {processing_log}, {detail_log}",
     )
 
-    valid_host = ""
-
-    if hostname_exists(hostname):
-        valid_host = hostname
-
-    if not valid_host:
+    if not hostname_exists(hostname):
         msg = "指定された hostname が許可リストに含まれていません。"
         print(f"{timestamp()} {msg}")
         log_processing(log_directory, pid, msg)
@@ -528,34 +842,27 @@ def main():
         )
         sys.exit(1)
 
-    #if len(valid_hosts) != len(hostnames):
-    #    missing = [h for h in hostnames if h not in valid_hosts]
-    #    msg = "存在しない hostname があります: " + ", ".join(missing)
-    #    print(f"{timestamp()} {msg}")
-    #    log_processing(log_directory, pid, msg)
-    #    set_client_error_status(
-    #        log_directory,
-    #        pid,
-    #        hostnames,
-    #        msg,
-    #        code=result_code.HOSTNAME_NOT_ALLOWED_CLIENT_ERROR,
-    #    )
-    #    sys.exit(1)
+    # ノード情報（デコミッション時に保存）が無ければ、この時点で異常終了する
+    if scenario in ("commission", "register"):
+        if not os.path.exists(node_info_path(uid, hostname)):
+            msg = f"ID不明: {uid}（{hostname} のノード情報がありません）"
+            print(f"{timestamp()} {msg}")
+            log_processing(log_directory, pid, msg)
+            log_detail(
+                log_directory, pid, f"{hostname}: nodeinfo不在 path={node_info_path(uid, hostname)}"
+            )
+            fail_and_exit(log_directory, pid, hostname, msg)
 
-    hostname = valid_host
+    action = spec["action"]
 
-    step = 1
-    steps = 3 if node_type == "leaf" else 4
-    action = "ノード切り離し" if scenario == "disable" else "ノード組み込み"
-
-    # ==== STEP1: APIC への接続確認 ====
-    #log_step(main_log_path, f"{action}:{node_type.capitalize()} START")
-    #log_step(main_log_path, f"[STEP{step}/{steps}]事前確認 START")
+    # ==== STEP1: APIC 接続とノード情報の確定 ====
+    log_processing(
+        log_directory, pid, f"{hostname}: 処理開始 (scenario={scenario}, type={node_type})"
+    )
 
     try:
-        token_node = random.choice(hostname)
-        log_processing(log_directory, pid, f"APIC接続試行: token_node={token_node}")
-        token, apic_ip, apic = get_token_from_random_node(token_node)
+        log_processing(log_directory, pid, f"APIC接続試行: token_node={hostname}")
+        token, apic_ip, apic = get_token_from_random_node(hostname)
         log_processing(
             log_directory, pid, f"APIC接続成功: apic_ip={apic_ip}, apic={apic}"
         )
@@ -567,71 +874,182 @@ def main():
             f"APIC接続例外: {type(e).__name__}: {e}\n{traceback.format_exc()}",
         )
         print(f"{timestamp()} Failed to retrieve APIC token or IP.")
-        #log_step(main_log_path, f"[STEP{step}/{steps}]事前確認 ERROR")
-        #log_step(main_log_path, f"{action}:{node_type.capitalize()} ERROR")
-        fail_all_and_exit(log_directory, pid, hostname, "APIC接続失敗")
+        fail_and_exit(log_directory, pid, hostname, "APIC接続失敗")
 
-    #log_step(main_log_path, f"[STEP{step}/{steps}]事前確認 END")
-    #step = step + 1
-
-    if scenario == "decommission":
-        
-        log_processing(
-            log_directory,
-            pid,
-            f"{hostname}: 処理開始 (scenario=disable, type={node_type})",
-        )
-
-        try:
-            token_node = random.choice(hostname)
-            log_processing(log_directory, pid, f"APIC接続試行: token_node={hostname}")
-            token, apic_ip, apic = get_token_from_random_node(hostname)
-            log_processing(
-                log_directory, pid, f"APIC接続成功: apic_ip={apic_ip}, apic={apic}"
+    try:
+        # コミッション / 新規登録は、同じ order_group のデコミッション時情報を使う
+        if scenario in ("commission", "register"):
+            info = load_node_info(uid, hostname, log_directory, pid)
+            if serial_number:
+                info["serial"] = serial_number
+            if not info.get("role"):
+                info["role"] = node_type
+            if not info.get("pod_id"):
+                info["pod_id"] = "1"
+        else:
+            info = resolve_node_info(
+                token, apic_ip, apic, hostname, node_type, serial=serial_number
             )
-        except Exception as e:
-            log_processing(log_directory, pid, "APIC接続失敗")
+
+        if not info.get("node_id"):
+            log_processing(log_directory, pid, f"{hostname}: node_id/pod_id 取得失敗")
             log_detail(
                 log_directory,
                 pid,
-                f"APIC接続例外: {type(e).__name__}: {e}\n{traceback.format_exc()}",
-            )
-            print(f"{timestamp()} Failed to retrieve APIC token or IP.")
-            #log_step(main_log_path, f"[STEP{step}/{steps}]事前確認 ERROR")
-            #log_step(main_log_path, f"{action}:{node_type.capitalize()} ERROR")
-            update_node_status(
-                log_directory,
-                pid,
-                hostname,
-                result_code.EACH_STATUS_CODE_SERVER_ERROR,
-                f"{hostname}: APIC接続失敗",
-            )
-
-        node_id, pod_id = get_hostname_info(hostname, apic_ip, apic, token)
-
-        if not node_id or not pod_id:
-            #log_step(main_log_path, f"[STEP{step}/{steps}]ノード切り離し ERROR")
-            #log_step(
-            #    main_log_path, f"ノード切り離し:{node_type.capitalize()} ERROR"
-            #)
-            log_processing(
-                log_directory, pid, f"{hostname}: node_id/pod_id 取得失敗"
-            )
-            log_detail(
-                log_directory,
-                pid,
-                f"{hostname}: get_hostname_info 失敗 apic_ip={apic_ip}, apic={apic}",
+                f"{hostname}: ノード情報取得失敗 apic_ip={apic_ip}, apic={apic}",
             )
             raise RuntimeError("node_id / pod_id が取得できません")
-        else:
-            log_detail(
+
+        # 同一シリアルが既に登録済みでないかを確認する
+        if scenario == "register":
+            registered = get_node_ident(token, apic_ip, info["serial"])
+            if registered:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: serial={info['serial']} は既に登録済み",
+                )
+                log_detail(
+                    log_directory, pid, f"{hostname}: 既存 fabricNodeIdentP={registered}"
+                )
+                raise RuntimeError(
+                    f"serial={info['serial']} は既に "
+                    f"nodeId={registered.get('nodeId')} / name={registered.get('name')} "
+                    f"として登録されています"
+                )
+
+        log_detail(
+            log_directory,
+            pid,
+            f"{hostname}: node_id={info['node_id']}, pod_id={info['pod_id']}, "
+            f"serial={info.get('serial')}, role={info.get('role')}, "
+            f"fabricSt={info.get('fabric_st')}",
+        )
+
+    except Exception as e:
+        log_detail(
+            log_directory,
+            pid,
+            f"{hostname}: 例外 {type(e).__name__}: {e}\n{traceback.format_exc()}",
+        )
+        print(f"{timestamp()} {e}")
+        fail_and_exit(log_directory, pid, hostname, str(e))
+
+    # ==== STEP2: API 投入 ====
+
+    try:
+        payload = build_payload(scenario, info, hostname, remove_from_controller)
+
+        # ノード情報は投入前に保存する。
+        # 投入後に保存が失敗すると「切り離し済みだが復旧情報が無い」状態になるため、
+        # 保存できない場合は APIC へ何も投入せずに異常終了させる。
+        if scenario == "decommission":
+            saved = save_node_info(
+                uid,
+                hostname,
+                {
+                    "hostname": hostname,
+                    "node_id": info["node_id"],
+                    "pod_id": info["pod_id"],
+                    "serial": info.get("serial", ""),
+                    "role": info.get("role", ""),
+                    "node_type": node_type,
+                    "order_group": uid,
+                    "pid": pid,
+                    "remove_from_controller": bool(remove_from_controller),
+                    "decommissioned_at": timestamp(),
+                },
                 log_directory,
                 pid,
-                f"{hostname}: node_id={node_id}, pod_id={pod_id}",
+            )
+            if not saved:
+                raise RuntimeError("ノード情報の保存に失敗しました（投入は未実施）")
+
+        log_processing(log_directory, pid, f"{hostname}: {action}投入開始")
+
+        resp = post_mo(
+            token,
+            apic_ip,
+            spec["mo_dn"],
+            payload,
+            log_directory=log_directory,
+            uid=pid,
+        )
+
+        if resp is False:
+            # 投入していないので、保存したノード情報は残さない
+            if scenario == "decommission":
+                remove_node_info(uid, hostname, log_directory, pid)
+            fail_and_exit(
+                log_directory, pid, hostname, f"POST失敗: {spec['mo_dn']}"
             )
 
+        log_processing(log_directory, pid, f"{hostname}: {action}投入完了")
 
-    elif scenario == "commission":
-        
+    except Exception as e:
+        log_processing(log_directory, pid, f"{hostname}: 例外発生 -> 異常終了")
+        log_detail(
+            log_directory,
+            pid,
+            f"{hostname}: 例外 {type(e).__name__}: {e}\n{traceback.format_exc()}",
+        )
+        print(f"{timestamp()} {e}")
+        fail_and_exit(log_directory, pid, hostname, f"{action}異常終了")
 
-    elif scenario == "register":
+    time.sleep(post_sleep_interval)
+
+    # ==== STEP3: 事後確認 ====
+
+    try:
+        # register はノードID登録そのものを確認する
+        if scenario == "register":
+            ident = get_node_ident(token, apic_ip, info["serial"])
+            if not ident:
+                log_processing(log_directory, pid, f"{hostname}: ノードID登録の確認NG")
+                raise RuntimeError("fabricNodeIdentP が確認できません")
+            log_processing(log_directory, pid, f"{hostname}: ノードID登録の確認OK")
+            log_detail(log_directory, pid, f"{hostname}: fabricNodeIdentP={ident}")
+
+        # fabricSt がシナリオの期待値になるまで待機
+        if wait_timeout > 0:
+            expected = "非active" if not spec["desired_active"] else "active"
+            log_processing(log_directory, pid, f"{hostname}: fabricSt {expected}待機開始")
+            reached = wait_for_node_status(
+                hostname,
+                desired_status=spec["desired_active"],
+                timeout=wait_timeout,
+                interval=30 if scenario == "decommission" else 60,
+            )
+            if not reached:
+                log_processing(
+                    log_directory, pid, f"{hostname}: 状態確認NG（timeout）"
+                )
+                raise RuntimeError(f"{action}後の状態確認NG（fabricSt {expected}未達）")
+
+            log_processing(log_directory, pid, f"{hostname}: 状態確認OK")
+
+    except Exception as e:
+        log_processing(log_directory, pid, f"{hostname}: 事後確認NG -> 異常終了")
+        log_detail(
+            log_directory,
+            pid,
+            f"{hostname}: 例外 {type(e).__name__}: {e}\n{traceback.format_exc()}",
+        )
+        print(f"{timestamp()} {e}")
+        fail_and_exit(log_directory, pid, hostname, f"{action}異常終了: {e}")
+
+    update_node_status(
+        log_directory,
+        pid,
+        hostname,
+        result_code.EACH_STATUS_CODE_COMPLETED,
+        f"{hostname}の{action}正常終了",
+    )
+
+
+    finalize_status(log_directory, pid)
+    log_processing(log_directory, pid, f"{action} 完了")
+
+
+if __name__ == "__main__":
+    main()
