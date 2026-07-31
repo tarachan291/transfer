@@ -25,8 +25,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 #   commission   : uni/fabric/outofsvc          fabricRsDecommissionNode (deleted)
 #   register     : uni/controller/nodeidentpol  fabricNodeIdentP         (created)
 #
-# デコミッション実行時に node_id / pod_id / serial / role を
-# run/{order_group}/{hostname}_nodeinfo.json に保存し、コミッション / 新規登録は
+# デコミッション実行時に node_id / pod_id / serial / role / model / version /
+# Forwarding Scale Profile を run/{order_group}/{hostname}_nodeinfo.json に、
+# 各ポートのトランシーバ情報を同 _transceivers_before.json に保存し、コミッション / 新規登録は
 # 同じ order_group からそれを読み込む（APIC から消えた後でも値を引き継げる）。
 # したがってコミッション / 新規登録は、デコミッション済みの order_group を
 # 指定することが前提。order_group 自体が無ければクライアントエラー、
@@ -355,7 +356,7 @@ def get_hostname_info(hostname, apic_ip, apic, token):
 
 
 def get_fabric_node_info(token, apic_ip, hostname):
-    """fabricNode から node_id / pod_id / serial / role / fabricSt を取得する。
+    """fabricNode から node_id / pod_id / serial / role / model / version / fabricSt を取得する。
 
     decommission 済みノードは topSystem から消えるため、こちらを優先して使う。
     removeFromController=false であれば decommission 後も fabricNode は残る。
@@ -382,6 +383,8 @@ def get_fabric_node_info(token, apic_ip, hostname):
             "pod_id": pod_match.group(1) if pod_match else "1",
             "serial": attrs.get("serial", ""),
             "role": attrs.get("role", ""),
+            "model": attrs.get("model", ""),
+            "version": attrs.get("version", ""),
             "fabric_st": attrs.get("fabricSt", ""),
             "dn": dn,
         }
@@ -470,6 +473,8 @@ def resolve_node_info(token, apic_ip, apic, hostname, node_type, serial=""):
             "pod_id": pod_id or "",
             "serial": "",
             "role": "",
+            "model": "",
+            "version": "",
             "fabric_st": "",
         }
 
@@ -483,6 +488,203 @@ def resolve_node_info(token, apic_ip, apic, hostname, node_type, serial=""):
         info["pod_id"] = "1"
 
     return info
+
+
+def get_fwd_scale_profile(token, apic_ip, node_id, pod_id):
+    """topoctrlFwdScaleProf から Forwarding Scale Profile（profType）を取得する。
+
+    取得できない場合は空文字を返す（記録目的のため、処理は継続する）。
+    """
+    url = (
+        f"{protocol}://{apic_ip}/api/node/class/topology/pod-{pod_id}/node-{node_id}/"
+        "topoctrlFwdScaleProf.json"
+    )
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+
+        if not imdata or "topoctrlFwdScaleProf" not in imdata[0]:
+            return ""
+
+        return imdata[0]["topoctrlFwdScaleProf"]["attributes"].get("profType", "")
+    except Exception as e:
+        print(f"{timestamp()} Failed to get topoctrlFwdScaleProf. {e}")
+        return ""
+
+
+def get_transceivers(token, apic_ip, node_id, pod_id):
+    """ethpmFcot から各ポートのトランシーバ情報を取得する。
+
+    戻り値は {ポート名: {"typeName": ..., "guiSN": ...}} の辞書。
+    取得できない場合は None（空の辞書とは区別する）。
+    """
+    url = (
+        f"{protocol}://{apic_ip}/api/node/class/topology/pod-{pod_id}/node-{node_id}/"
+        'ethpmFcot.json?query-target-filter=eq(ethpmFcot.state,"inserted")'
+    )
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+    except Exception as e:
+        print(f"{timestamp()} Failed to get ethpmFcot. {e}")
+        return None
+
+    transceivers = {}
+    for item in imdata:
+        if "ethpmFcot" not in item:
+            continue
+
+        attrs = item["ethpmFcot"].get("attributes", {})
+
+        # クエリ側でも絞っているが、念のため未実装ポートを除外する
+        if attrs.get("state", "") != "inserted":
+            continue
+
+        dn = attrs.get("dn", "")
+        port_match = re.search(r"phys-\[([^\]]+)\]", dn)
+        port = port_match.group(1) if port_match else dn
+
+        transceivers[port] = {
+            "typeName": attrs.get("typeName", "").strip(),
+            "guiSN": attrs.get("guiSN", "").strip(),
+        }
+
+    return transceivers
+
+
+def transceiver_path(uid, hostname, phase):
+    """トランシーバ情報の保存パス（phase は before / after / diff）。"""
+    return os.path.join(
+        script_directory, "run", uid, f"{hostname}_transceivers_{phase}.json"
+    )
+
+
+def save_transceivers(uid, hostname, phase, data, log_directory, pid):
+    """トランシーバ情報を JSON で保存する。失敗時は None を返す。"""
+    path = transceiver_path(uid, hostname, phase)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=4, sort_keys=True)
+        log_processing(
+            log_directory,
+            pid,
+            f"{hostname}: トランシーバ情報を保存 ({phase}, {len(data)}ポート)",
+        )
+        log_detail(log_directory, pid, f"{hostname}: transceivers({phase})={path}")
+        return path
+    except Exception as e:
+        log_processing(
+            log_directory, pid, f"{hostname}: トランシーバ情報の保存に失敗 ({phase})"
+        )
+        log_detail(log_directory, pid, f"{hostname}: 保存例外 {type(e).__name__}: {e}")
+        return None
+
+
+def load_transceivers(uid, hostname, phase, log_directory, pid):
+    """保存済みのトランシーバ情報を読み込む。無ければ None。"""
+    path = transceiver_path(uid, hostname, phase)
+    if not os.path.exists(path):
+        log_detail(log_directory, pid, f"{hostname}: transceivers不在 path={path}")
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        log_detail(log_directory, pid, f"{hostname}: 読込例外 {type(e).__name__}: {e}")
+        return None
+
+
+def compare_transceivers(before, after):
+    """事前・事後のトランシーバ情報を比較し、差分の一覧を返す。
+
+    比較対象は typeName（種別）と guiSN（シリアル番号）。
+    """
+    diffs = []
+
+    for port in sorted(set(before) | set(after)):
+        b = before.get(port)
+        a = after.get(port)
+
+        if b and not a:
+            diffs.append(
+                {"port": port, "reason": "欠落", "before": b, "after": None}
+            )
+        elif a and not b:
+            diffs.append(
+                {"port": port, "reason": "増設", "before": None, "after": a}
+            )
+        elif b.get("guiSN", "") != a.get("guiSN", ""):
+            diffs.append(
+                {"port": port, "reason": "シリアル相違", "before": b, "after": a}
+            )
+        elif b.get("typeName", "") != a.get("typeName", ""):
+            diffs.append(
+                {"port": port, "reason": "種別相違", "before": b, "after": a}
+            )
+
+    return diffs
+
+
+def verify_node_info(token, apic_ip, hostname, expected, node_type, log_directory, pid):
+    """登録後のノードが、デコミッション時に保持した構成と一致するか確認する。
+
+    不一致だった項目のリストを返す（空なら一致）。
+    serial は筐体交換で変わる前提のため比較対象に含めない。
+    """
+    current = get_fabric_node_info(token, apic_ip, hostname)
+
+    if not current:
+        log_processing(log_directory, pid, f"{hostname}: fabricNode が取得できません")
+        return ["fabricNode が取得できません"]
+
+    current["fwd_scale_prof"] = get_fwd_scale_profile(
+        token, apic_ip, current.get("node_id", ""), current.get("pod_id", "")
+    )
+    current["node_type"] = current.get("role", "")
+
+    log_detail(log_directory, pid, f"{hostname}: 登録後の構成={current}")
+
+    # (項目名, 期待値, 実際の値)
+    targets = [
+        ("hostname", expected.get("hostname", hostname), current.get("hostname", "")),
+        ("node_id", expected.get("node_id", ""), current.get("node_id", "")),
+        ("pod_id", expected.get("pod_id", ""), current.get("pod_id", "")),
+        ("role", expected.get("role", ""), current.get("role", "")),
+        ("node_type", expected.get("node_type", node_type), current.get("node_type", "")),
+        ("model", expected.get("model", ""), current.get("model", "")),
+        ("version", expected.get("version", ""), current.get("version", "")),
+        (
+            "fwd_scale_prof",
+            expected.get("fwd_scale_prof", ""),
+            current.get("fwd_scale_prof", ""),
+        ),
+    ]
+
+    mismatches = []
+    for name, want, got in targets:
+        if not want:
+            # 保持していない項目は比較しない
+            log_processing(log_directory, pid, f"{hostname}: {name} 比較スキップ（保持値なし）")
+            continue
+
+        if str(want) == str(got):
+            log_processing(log_directory, pid, f"{hostname}: {name} 一致 ({got})")
+        else:
+            log_processing(
+                log_directory, pid, f"{hostname}: {name} 不一致 (期待={want}, 実際={got})"
+            )
+            mismatches.append(f"{name}(期待={want}, 実際={got})")
+
+    return mismatches
 
 
 def get_node_status(token, apic_ip, hostname):
@@ -506,6 +708,31 @@ def get_node_status(token, apic_ip, hostname):
     except Exception as e:
         print(f"{timestamp()} Failed to get node status. {e}")
         return False
+
+
+def get_pending_node(token, apic_ip, serial):
+    """登録待ちノード（dhcpClient）を取得する。
+
+    Fabric Membership の Nodes Pending Registration に相当する。
+    未接続・シリアル誤りの場合は APIC 側にエントリが無いため None を返す。
+    登録済みノードも同じクラスに残るので、判定は呼び出し側で nodeId を見る。
+    """
+    pending_url = f'{protocol}://{apic_ip}/api/node/class/dhcpClient.json?query-target-filter=eq(dhcpClient.id,"{serial}")'
+    session = requests.Session()
+    session.verify = False
+    session.headers.update({"Cookie": "APIC-Cookie=" + token})
+    try:
+        response = session.get(pending_url, proxies={"http": None, "https": None})
+        response.raise_for_status()
+        imdata = response.json()["imdata"]
+
+        if not imdata:
+            return None
+
+        return imdata[0]["dhcpClient"]["attributes"]
+    except Exception as e:
+        print(f"{timestamp()} Failed to get dhcpClient. {e}")
+        return None
 
 
 def get_node_ident(token, apic_ip, serial):
@@ -900,7 +1127,7 @@ def main():
             )
             raise RuntimeError("node_id / pod_id が取得できません")
 
-        # 同一シリアルが既に登録済みでないかを確認する
+        # 新規登録の事前確認: 二重登録と、登録待ちノードの実在・ロールを検証する
         if scenario == "register":
             registered = get_node_ident(token, apic_ip, info["serial"])
             if registered:
@@ -918,11 +1145,60 @@ def main():
                     f"として登録されています"
                 )
 
+            # 指定シリアルが実際に登録待ち（dhcpClient）として見えているかを確認する
+            pending = get_pending_node(token, apic_ip, info["serial"])
+
+            if not pending:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: serial={info['serial']} は登録待ちノードに存在しません",
+                )
+                raise RuntimeError(
+                    f"serial={info['serial']} は登録待ちノードに存在しません"
+                    "（未接続、またはシリアル誤り）"
+                )
+
+            pending_node_id = pending.get("nodeId", "")
+            if pending_node_id not in ("", "0"):
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: serial={info['serial']} は既にnodeId={pending_node_id}",
+                )
+                log_detail(log_directory, pid, f"{hostname}: dhcpClient={pending}")
+                raise RuntimeError(
+                    f"serial={info['serial']} は既に nodeId={pending_node_id} が"
+                    "割り当てられています"
+                )
+
+            pending_role = pending.get("nodeRole", "")
+            if pending_role and pending_role != node_type:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: ロール不一致 (指定={node_type}, 実機={pending_role})",
+                )
+                raise RuntimeError(
+                    f"serial={info['serial']} のロールは {pending_role} です"
+                    f"（指定は {node_type}）"
+                )
+
+            log_processing(
+                log_directory,
+                pid,
+                f"{hostname}: 登録待ちノードを確認 "
+                f"(serial={info['serial']}, role={pending_role}, "
+                f"model={pending.get('model', '')})",
+            )
+            log_detail(log_directory, pid, f"{hostname}: dhcpClient={pending}")
+
         log_detail(
             log_directory,
             pid,
             f"{hostname}: node_id={info['node_id']}, pod_id={info['pod_id']}, "
             f"serial={info.get('serial')}, role={info.get('role')}, "
+            f"model={info.get('model')}, version={info.get('version')}, "
             f"fabricSt={info.get('fabric_st')}",
         )
 
@@ -944,6 +1220,18 @@ def main():
         # 投入後に保存が失敗すると「切り離し済みだが復旧情報が無い」状態になるため、
         # 保存できない場合は APIC へ何も投入せずに異常終了させる。
         if scenario == "decommission":
+            # 切り離し前の構成を記録として残す（取得できなくても投入は継続する）
+            fwd_scale_prof = get_fwd_scale_profile(
+                token, apic_ip, info["node_id"], info["pod_id"]
+            )
+            log_processing(
+                log_directory,
+                pid,
+                f"{hostname}: model={info.get('model', '')}, "
+                f"version={info.get('version', '')}, "
+                f"fwd_scale_prof={fwd_scale_prof or '取得不可'}",
+            )
+
             saved = save_node_info(
                 uid,
                 hostname,
@@ -953,6 +1241,9 @@ def main():
                     "pod_id": info["pod_id"],
                     "serial": info.get("serial", ""),
                     "role": info.get("role", ""),
+                    "model": info.get("model", ""),
+                    "version": info.get("version", ""),
+                    "fwd_scale_prof": fwd_scale_prof,
                     "node_type": node_type,
                     "order_group": uid,
                     "pid": pid,
@@ -964,6 +1255,21 @@ def main():
             )
             if not saved:
                 raise RuntimeError("ノード情報の保存に失敗しました（投入は未実施）")
+
+            # 切り離し前のトランシーバ情報を保存（新規登録の事後比較に使う）
+            transceivers = get_transceivers(
+                token, apic_ip, info["node_id"], info["pod_id"]
+            )
+            if transceivers is None:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: トランシーバ情報を取得できません（比較は実施されません）",
+                )
+            else:
+                save_transceivers(
+                    uid, hostname, "before", transceivers, log_directory, pid
+                )
 
         log_processing(log_directory, pid, f"{hostname}: {action}投入開始")
 
@@ -1027,6 +1333,65 @@ def main():
                 raise RuntimeError(f"{action}後の状態確認NG（fabricSt {expected}未達）")
 
             log_processing(log_directory, pid, f"{hostname}: 状態確認OK")
+
+        # 新規登録は、デコミッション時に保持した構成と一致しているかを確認する
+        if scenario == "register":
+            mismatches = verify_node_info(
+                token, apic_ip, hostname, info, node_type, log_directory, pid
+            )
+            if mismatches:
+                raise RuntimeError("構成不一致: " + " / ".join(mismatches))
+
+            log_processing(log_directory, pid, f"{hostname}: 構成一致確認OK")
+
+            # トランシーバの事前・事後比較
+            before_tr = load_transceivers(uid, hostname, "before", log_directory, pid)
+
+            if before_tr is None:
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: 比較元のトランシーバ情報なし -> 比較スキップ",
+                )
+            else:
+                after_tr = get_transceivers(
+                    token, apic_ip, info["node_id"], info["pod_id"]
+                )
+                if after_tr is None:
+                    log_processing(
+                        log_directory, pid, f"{hostname}: トランシーバ情報の取得NG"
+                    )
+                    raise RuntimeError("トランシーバ情報が取得できません")
+
+                save_transceivers(
+                    uid, hostname, "after", after_tr, log_directory, pid
+                )
+
+                tr_diffs = compare_transceivers(before_tr, after_tr)
+
+                if tr_diffs:
+                    save_transceivers(
+                        uid, hostname, "diff", tr_diffs, log_directory, pid
+                    )
+                    for d in tr_diffs:
+                        b_sn = (d["before"] or {}).get("guiSN", "-")
+                        a_sn = (d["after"] or {}).get("guiSN", "-")
+                        log_processing(
+                            log_directory,
+                            pid,
+                            f"{hostname}: {d['port']} {d['reason']} "
+                            f"(事前={b_sn}, 事後={a_sn})",
+                        )
+                    raise RuntimeError(
+                        f"トランシーバ不一致 {len(tr_diffs)}件"
+                        f"（{transceiver_path(uid, hostname, 'diff')} 参照）"
+                    )
+
+                log_processing(
+                    log_directory,
+                    pid,
+                    f"{hostname}: トランシーバ一致確認OK ({len(after_tr)}ポート)",
+                )
 
     except Exception as e:
         log_processing(log_directory, pid, f"{hostname}: 事後確認NG -> 異常終了")
