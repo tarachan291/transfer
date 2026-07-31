@@ -58,3 +58,6 @@ curl -sk -X POST "$APIC/api/node/mo/uni/fabric/outofsvc.json" -b cookie.txt \
 
 # 状態確認
 curl -sk "$APIC/api/class/fabricNode.json" -b cookie.txt | python3 -m json.tool
+
+
+curl -sk "https://$APIC/api/node/class/dhcpClient.json" -b cookie.txt | python3 -m json.tool
