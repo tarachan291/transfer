@@ -150,16 +150,6 @@ def list_profile_policies(session, apic_ip):
     return [attrs_of(i, "topoctrlFwdScaleProfilePol") for i in imdata]
 
 
-def resolve_profile_name(pols, prof_type):
-    """profType から topoctrlFwdScaleProfilePol の name を逆引きする。
-
-    表記ゆれ（highDualStack / high-dual-stack）を吸収して比較する。
-    候補が複数ある場合は決められないため、候補一覧を返して呼び出し側で判断させる。
-    """
-    matched = [p for p in pols if same_profile(p.get("profType", ""), prof_type)]
-    return matched
-
-
 def trace_policy_chain(session, apic_ip, node_id):
     """対象ノード → セレクタ → Policy Group → プロファイルの経路を辿る。
 
@@ -316,10 +306,21 @@ def show(session, apic_ip, node, target_profile=None):
     print("=" * 68)
 
 
+# 既定プロファイルの別名。currentProfile が "default"、profType が "dual-stack" の
+# ように表記が割れるため、同一のものとして扱う
+DEFAULT_ALIASES = {"default", "dualstack"}
+
+
+def normalize_profile(value):
+    return re.sub(r"[-_]", "", (value or "")).lower()
+
+
 def same_profile(a, b):
     """profType（キャメルケース）と currentProfile 名（ハイフン区切り）を比較する。"""
-    norm = lambda s: re.sub(r"[-_]", "", s).lower()
-    return norm(a) == norm(b)
+    na, nb = normalize_profile(a), normalize_profile(b)
+    if na in DEFAULT_ALIASES and nb in DEFAULT_ALIASES:
+        return True
+    return na == nb
 
 
 def judge(chains, pols, node, target_profile):
@@ -360,8 +361,20 @@ def judge(chains, pols, node, target_profile):
 
 
 def apply_profile(session, apic_ip, node, target_profile, dry_run=False, force=False):
-    chains = trace_policy_chain(session, apic_ip, node["node_id"])
     pols = list_profile_policies(session, apic_ip)
+
+    # 交換前と同じプロファイルで動いていれば何もしない
+    target_type = next(
+        (p.get("profType", "") for p in pols if p.get("name") == target_profile), ""
+    )
+    prof = get_current_profile(session, apic_ip, node["node_id"], node["pod_id"])
+    if prof and target_type and same_profile(prof["currentProfileName"], target_type):
+        print(
+            f"\n稼働中のプロファイルが既に {target_type} のため、変更は不要です"
+        )
+        return True
+
+    chains = trace_policy_chain(session, apic_ip, node["node_id"])
 
     if not judge(chains, pols, node, target_profile) and not force:
         print("\n中止しました（--force で強行できます）")
@@ -472,19 +485,14 @@ def main():
     parser.add_argument(
         "--profile", help="適用する topoctrlFwdScaleProfilePol の name"
     )
-    parser.add_argument(
-        "--prof_type",
-        help="適用したい profType（例: highDualStack）。"
-        "該当する name を APIC から逆引きする",
-    )
     parser.add_argument("--dry_run", action="store_true", help="投入せず内容だけ表示")
     parser.add_argument(
         "--force", action="store_true", help="影響範囲の警告を無視して適用する"
     )
     args = parser.parse_args()
 
-    if args.action == "apply" and not (args.profile or args.prof_type):
-        print("--action apply には --profile または --prof_type が必要です")
+    if args.action == "apply" and not args.profile:
+        print("--action apply には --profile が必要です")
         sys.exit(1)
 
     if not args.target_node and not args.node_id:
@@ -526,45 +534,14 @@ def main():
             print("  --node_id で直接指定することもできます")
             sys.exit(1)
 
-    # 適用対象プロファイル名の解決: --profile 優先、無ければ --prof_type から逆引き
-    target_profile = args.profile
-    if not target_profile:
-        want_type = args.prof_type
-        if want_type:
-            pols = list_profile_policies(session, apic_ip)
-            matched = resolve_profile_name(pols, want_type)
-
-            if not matched:
-                print(f"\nprofType='{want_type}' に一致するポリシーが APIC にありません")
-                if pols:
-                    print("  定義済み:")
-                    for p in pols:
-                        print(f"    - {p.get('name', '')} (profType={p.get('profType', '')})")
-                else:
-                    print("  定義済みポリシーなし（Default のみ）")
-                if args.action == "apply":
-                    sys.exit(1)
-            elif len(matched) > 1:
-                print(f"\nprofType='{want_type}' に一致するポリシーが複数あります")
-                for p in matched:
-                    print(f"    - {p.get('name', '')}")
-                print("  --profile で名前を指定してください")
-                if args.action == "apply":
-                    sys.exit(1)
-            else:
-                target_profile = matched[0].get("name", "")
-                print(
-                    f"\nprofType='{want_type}' -> ポリシー '{target_profile}' を使用します"
-                )
-
     try:
         if args.action == "show":
-            show(session, apic_ip, node, target_profile)
+            show(session, apic_ip, node, args.profile)
         elif args.action == "apply":
-            show(session, apic_ip, node, target_profile)
+            show(session, apic_ip, node, args.profile)
             print()
             ok = apply_profile(
-                session, apic_ip, node, target_profile, args.dry_run, args.force
+                session, apic_ip, node, args.profile, args.dry_run, args.force
             )
             sys.exit(0 if ok else 1)
         elif args.action == "reload":
